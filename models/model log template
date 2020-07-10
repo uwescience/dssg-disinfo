@@ -1,0 +1,28 @@
+### Answer the questions in as much detail as possible.
+
+1. Training methods you used eg. Logistic Regression, Naive Bayes.
+
+2. The tools you used
+
+3. How long does it take to train your model?
+ 
+4. Most important features.
+(Features are the predictors for the target variable.)
+
+5. Outline any important feature transformations
+
+6. Relationship between the most important features and the target variable.
+(Use this answer to show how the predictors you started with impacted the target variable.)
+
+7. Performance metric for the model?
+(These are the suggested metrics. Please feel free to add or subtract from them.)
+
+* Precision
+* Recall
+* AUC
+* F1 score
+
+8. What sets this model apart from others?
+
+9. Interesting relationships in the data that don't fit in the sections above. 
+
