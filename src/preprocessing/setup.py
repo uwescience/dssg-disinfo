@@ -51,3 +51,37 @@ def load_cleandata():
     # Export clean data
     df.to_csv(PATH+'articles_v3.csv', index=False)
     return
+
+def find_url(text):
+    '''
+    Returns a list of all URLS embedded in a text 
+    
+    '''
+    
+    urls = (re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text))
+    return urls
+
+def url_list():
+    '''
+    Identifies urls in each article text and creates a new column with 
+    the list of identified urls as well as 
+    '''
+    df['urls'] = [find_url(cell) for cell in df['article_text']]
+    return 
+
+def replace_url(all_data):
+    '''
+    Finds and replaces url with 'EMBD_URL' within article text
+    '''
+    pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    df['article_text'].replace(to_replace = pattern, value = 'EMBD_HTML', regex=True, inplace=True)
+    return
+
+def process_urls():
+    '''
+    Pulling everything together
+    and returns a processed dataframe
+    '''
+    url_list(df)
+    replace_url(df)
+    return 
