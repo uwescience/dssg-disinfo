@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from langdetect import detect
 
 def load_cleandata():
@@ -7,11 +8,15 @@ def load_cleandata():
     Drops empty article_text rows
     Removes duplicated article_text
     Remove non-english article_text from the dataframe
+    Remove noisy characters from article_text, article_headline
+    Converting all characters in article_text, article_headline to ascii- removes emoticons
     Export clean data
     """
+    PATH = '/data/dssg-disinfo/'
+    
     # Concatanate negative and positive articles
-    df_neg = pd.read_csv('/data/dssg-disinfo/negative_articles_v3.csv')
-    df_pos = pd.read_csv('/data/dssg-disinfo/positive_articles_v3.csv')
+    df_neg = pd.read_csv(PATH+'negative_articles_v3.csv')
+    df_pos = pd.read_csv(PATH+'positive_articles_v3.csv')
     df = pd.concat([df_pos, df_neg], ignore_index=True)
     
     # Drop empty article_text rows
@@ -31,6 +36,18 @@ def load_cleandata():
     # Removing non-english articles        
     df.drop(non_en_index, inplace= True)
     
+    # Removing noisy characters from article-text
+    df['article_text'] = [article.replace('\n', ' ') for article in df.article_text]
+    df['article_headline'] =[headline.replace('\n', ' ') for headline in df.article_headline]
+    
+    # Replace anything other than alphabets(a-z,A-Z),?,!,whitespaces,0-9,comma, fullstops, dashes with a space
+    df['article_text'] = [str(article).replace('[^a-zA-Z*|\?*|!*|\s*|0-9*|,*|.*|\-*]', ' ') for article in df.article_text]
+    df['article_headline'] = [str(headline).replace('[^a-zA-Z*|\?*|!*|\s*|0-9*|,*|.*|\-*]', ' ') for headline in df.article_headline]
+    
+    # Converting all characters to ascii
+    df['article_text'] = [article.str.encode('ascii', errors='ignore') for article in df.article_text]
+    df['article_headline'] = [headline.str.encode('ascii', errors='ignore') for headline in df.article_headline]
+    
     # Export clean data
-    df.to_csv('/data/dssg-disinfo/articles_v3.csv', index=False)
+    df.to_csv(PATH+'articles_v3.csv', index=False)
     return
