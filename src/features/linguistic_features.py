@@ -120,7 +120,7 @@ def check_for_spelling_errors(df):
         Returns DataFrame with spell-checked values columns and article_pk
         
     '''
-    df['misspelled_list'] = df.apply(lambda row: spell.unknown(row['tokens']), axis=1)
+    df['misspelled_list'] = df.apply(lambda row: list(spell.unknown(row['tokenized_article_text'])), axis=1)
     df['number_misspelled'] = df.apply(lambda row: len(row['misspelled_list']), axis=1)
     df2 = data[['article_pk','misspelled_list','number_misspelled']].copy()
     return df2 
