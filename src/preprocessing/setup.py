@@ -1,7 +1,73 @@
-import pandas as pd
-import os
+from dotenv import load_dotenv
 from langdetect import detect
+from pathlib import Path  # Python 3.6+ only
+import pandas as pd
+import numpy as np
+import spacy
+import os
 
+# Path to the environment variables file .env
+env_path = '/data/dssg-disinfo/.env'
+load_dotenv(env_path, override=True)
+
+def replace_char(DATA, CHAR, COLUMN=None):
+    """
+    Replace various whitespace characters with single space
+    
+    input:
+    CHAR: charcter that needs to be replaced
+    COLUMN: column from which the character has to be replaced
+    
+    output:
+    None
+    """
+    if COLUMN is None:
+        COLUMN_NAME='article_text'
+    else:
+        COLUMN_NAME=COLUMN
+    
+    DATA[COLUMN_NAME]=[str(column).replace(CHAR, ' ') for column in DATA[COLUMN_NAME]]
+    return
+
+
+def remove_non_ascii(DATA, COLUMN=None):
+    """
+    Remove all non-ASCII characters
+    
+    input:
+    COLUMN: column from which non-ASCII charcters will be removed
+    
+    output:
+    None
+    """
+    if COLUMN is None:
+        COLUMN_NAME='article_text'
+    else:
+        COLUMN_NAME=COLUMN
+        
+    DATA[COLUMN_NAME] = [str(column).encode('ascii', errors='ignore').decode() for column in DATA[COLUMN_NAME]]
+    return 
+
+def find_url(text):
+    '''
+    input:
+    text
+    
+    output:
+    list: All URLS embedded in the input text 
+    '''
+    urls = (re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text))
+    return urls
+
+def url_list():
+    '''
+    Identifies urls in each article text and creates a new column with 
+    the list of identified urls as well as 
+    '''
+    
+    df['urls'] = [find_url(cell) for cell in df['article_text']]
+    return 
+    
 def load_cleandata():
     """
     Concatanates negative and positive articles
@@ -10,21 +76,32 @@ def load_cleandata():
     Remove non-english article_text from the dataframe
     Remove noisy characters from article_text, article_headline
     Converting all characters in article_text, article_headline to ascii- removes emoticons
-    Export clean data
+    Export clean data in PATH location
+    
+    input:
+    dataframe- should have article_text, article_headline columns
+    
+    output:
+    None
     """
-    PATH = '/data/dssg-disinfo/'
+    PATH = os.getenv("PATH")
+    NEGATIVE_DATA = os.getenv("NEGATIVE_DATA")
+    POSITIVE_DATA = os.getenv("POSITIVE_DATA")
+    CLEAN_DATA = os.getenv("CLEAN_DATA")
     
-    # Concatanate negative and positive articles
-    df_neg = pd.read_csv(os.path.join(PATH,'negative_articles_v3.csv'))
-    df_pos = pd.read_csv(os.path.join(PATH,'positive_articles_v3.csv'))
-    df = pd.concat([df_pos, df_neg], ignore_index=True)
+    df_neg = pd.read_csv(os.path.join(PATH,NEGATIVE_DATA)) # Load negative data
+    df_pos = pd.read_csv(os.path.join(PATH,POSITIVE_DATA)) # Load positive data
+    df = pd.concat([df_pos, df_neg], ignore_index=True) # Concatanate negative and positive articles
     
+    print("Removing empty rows from articles")
     # Drop empty article_text rows
     df.dropna(subset=['article_text'], inplace=True)
     
+    print("Dropping duplicate articles")
     # Drop duplicated article_text
     df.drop_duplicates(subset='article_text', keep='first', inplace=True)
     
+    print("Removing non-english articles")
     # Index of non-english rows
     non_en_index = []
     for index, row in df.iterrows():
@@ -36,53 +113,28 @@ def load_cleandata():
     # Removing non-english articles        
     df.drop(non_en_index, inplace=True)
     
-    nonspace_ws_characters = ['\n', '\t', '\r', '\v', '\f']
-    # Removing noisy characters from article-text
-    df['article_text'] = [article.replace('\n', ' ') for article in df.article_text]
-    df['article_headline'] =[headline.replace('\n', ' ') for headline in df.article_headline]
+    print("Removing whitespace characters")
+    nonspace_ws_characters = ['\n', '\t', '\r', '\v', '\f'] # List of variout white space characters
     
-    # Replace anything other than alphabets(a-z,A-Z),?,!,whitespaces,0-9,comma, fullstops, dashes with a space
-    df['article_text'] = [str(article).replace('[^a-zA-Z*|\?*|!*|\s*|0-9*|,*|.*|\-*]', ' ') for article in df.article_text]
-    df['article_headline'] = [str(headline).replace('[^a-zA-Z*|\?*|!*|\s*|0-9*|,*|.*|\-*]', ' ') for headline in df.article_headline]
-    
-    # Converting all characters to ascii
-    df['article_text'] = [article.str.encode('ascii', errors='ignore') for article in df.article_text]
-    df['article_headline'] = [headline.str.encode('ascii', errors='ignore') for headline in df.article_headline]
-    
-    # Export clean data
-    df.to_csv(os.path.join(PATH, 'articles_v3.csv'), index=False)
-    return
-
-def find_url(text):
-    '''
-    Returns a list of all URLS embedded in a text 
-    
-    '''
-    
-    urls = (re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text))
-    return urls
-
-def url_list():
-    '''
-    Identifies urls in each article text and creates a new column with 
-    the list of identified urls as well as 
-    '''
-    df['urls'] = [find_url(cell) for cell in df['article_text']]
-    return 
-
-def replace_url(all_data):
-    '''
-    Finds and replaces url with 'EMBD_URL' within article text
-    '''
-    pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+    for char in nonspace_ws_characters:  
+        replace_char(df, char, 'article_text')
+        replace_char(df, char, 'article_headline')
+                         
+    print("Replacing urls with token EMBD_HTML")                     
+    # Encoding URLs
+    pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+' # regex for https urls
     df['article_text'].replace(to_replace = pattern, value = 'EMBD_HTML', regex=True, inplace=True)
-    return
+    
+    pattern = r'[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)' # regex for urls without https
+    df['article_text'].replace(to_replace=pattern, value='EMBD_HTML', regex=True, inplace=True)
+    
+    print("Removing non-ASCII characters")
+    # Removing non-ASCII characters                     
+    remove_non_ascii(df, 'article_text')
+    remove_non_ascii(df, 'article_headline')
+    
+    print("Exporting clean data")
+    # Export clean data
+    df.to_csv(os.path.join(PATH, CLEAN_DATA), index=False)
 
-def process_urls():
-    '''
-    Pulling everything together
-    and returns a processed dataframe
-    '''
-    url_list(df)
-    replace_url(df)
-    return 
+    return
