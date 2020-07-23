@@ -15,15 +15,15 @@ def load_cleandata():
     PATH = '/data/dssg-disinfo/'
     
     # Concatanate negative and positive articles
-    df_neg = pd.read_csv(PATH+'negative_articles_v3.csv')
-    df_pos = pd.read_csv(PATH+'positive_articles_v3.csv')
+    df_neg = pd.read_csv(os.path.join(PATH,'negative_articles_v3.csv'))
+    df_pos = pd.read_csv(os.path.join(PATH,'positive_articles_v3.csv'))
     df = pd.concat([df_pos, df_neg], ignore_index=True)
     
     # Drop empty article_text rows
     df.dropna(subset=['article_text'], inplace=True)
     
     # Drop duplicated article_text
-    df.drop_duplicates(subset = 'article_text', keep='first', inplace=True)
+    df.drop_duplicates(subset='article_text', keep='first', inplace=True)
     
     # Index of non-english rows
     non_en_index = []
@@ -34,8 +34,9 @@ def load_cleandata():
             non_en_index.append(index)
 
     # Removing non-english articles        
-    df.drop(non_en_index, inplace= True)
+    df.drop(non_en_index, inplace=True)
     
+    nonspace_ws_characters = ['\n', '\t', '\r', '\v', '\f']
     # Removing noisy characters from article-text
     df['article_text'] = [article.replace('\n', ' ') for article in df.article_text]
     df['article_headline'] =[headline.replace('\n', ' ') for headline in df.article_headline]
@@ -49,5 +50,5 @@ def load_cleandata():
     df['article_headline'] = [headline.str.encode('ascii', errors='ignore') for headline in df.article_headline]
     
     # Export clean data
-    df.to_csv(PATH+'articles_v3.csv', index=False)
+    df.to_csv(os.path.join(PATH, 'articles_v3.csv'), index=False)
     return
