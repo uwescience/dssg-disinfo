@@ -3,5 +3,10 @@ data/
 *.csv
 .ipynb_checkpoints
 *.pyc
+*.ipynb_checkpoints
+.DS_Store
+data/
+*.csv
+*.ipynb_checkpoints
 *.ipynb
 !/notebooks/*.ipynb
