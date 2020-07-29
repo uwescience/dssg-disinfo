@@ -3,6 +3,5 @@ data/
 *.csv
 .ipynb_checkpoints
 *.pyc
-__pycache__
 *.ipynb
 !/notebooks/*.ipynb
