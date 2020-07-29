@@ -4,6 +4,8 @@ from collections import Counter
 import pandas as pd
 from joblib import Parallel, delayed
 
+nlp = spacy.load('en_core_web_sm')
+
 
 
 #Tagging parts of speech
@@ -72,7 +74,7 @@ def process_chunk(texts):
         preproc_pipe.append(pos_pipe(doc))
     return preproc_pipe
 
-def preprocess_parallel(texts, chunksize=100):
+def preprocess_parallel(texts, df, chunksize=100):
     ''' Processes article text with NLP SpaCy
     and returns a all pos tags for a text
     
@@ -86,6 +88,7 @@ def preprocess_parallel(texts, chunksize=100):
     preproc_pipe: list
         Returns a list of POS tags
     '''
+    
     executor = Parallel(n_jobs=7, backend='multiprocessing', prefer="processes")
     do = delayed(process_chunk)
     tasks = (do(chunk) for chunk in chunker(texts, len(df), chunksize=chunksize))
@@ -107,36 +110,37 @@ def tag_pos(df):
         Returns a new dataframe
 
 
-POS TAG Scheme 
-        
-POS	   Description	     Examples
+    POS TAG Scheme 
 
-ADJ	   adjective	     big, old, green, incomprehensible, first
-ADP	   adposition	     in, to, during
-ADV	   adverb	         very, tomorrow, down, where, there
-AUX	   auxiliary	     is, has (done), will (do), should (do)
-CONJ   conjunction       and, or, but
-CCONJ  coordinating      and, or, but
-       conjunction	
-DET	   determiner	     a, an, the
-INTJ   interjection      psst, ouch, bravo, hello
-NOUN   noun	             girl, cat, tree, air, beauty
-NUM	   numeral	         1, 2017, one, seventy-seven, IV, MMXIV
-PART   particle	         ’s, not,
-PRON   pronoun	         I, you, he, she, myself, themselves, somebody
-PROPN  proper noun       Mary, John, London, NATO, HBO
-PUNCT  punctuation	     ., (, ), ?
-SCONJ  subordinating     if, while, that
-       conjunction	
-SYM	   symbol	        $, %, §, ©, +, −, ×, ÷, =, :), 😝
-VERB   verb	            run, runs, running, eat, ate, eating
-X	   other	        sfpksdpsxmsa
-SPACE  space	    
+    POS	   Description	     Examples
+
+    ADJ	   adjective	     big, old, green, incomprehensible, first
+    ADP	   adposition	     in, to, during
+    ADV	   adverb	         very, tomorrow, down, where, there
+    AUX	   auxiliary	     is, has (done), will (do), should (do)
+    CONJ   conjunction       and, or, but
+    CCONJ  coordinating      and, or, but
+           conjunction	
+    DET	   determiner	     a, an, the
+    INTJ   interjection      psst, ouch, bravo, hello
+    NOUN   noun	             girl, cat, tree, air, beauty
+    NUM	   numeral	         1, 2017, one, seventy-seven, IV, MMXIV
+    PART   particle	         ’s, not,
+    PRON   pronoun	         I, you, he, she, myself, themselves, somebody
+    PROPN  proper noun       Mary, John, London, NATO, HBO
+    PUNCT  punctuation	     ., (, ), ?
+    SCONJ  subordinating     if, while, that
+           conjunction	
+    SYM	   symbol	        $, %, §, ©, +, −, ×, ÷, =, :), 😝
+    VERB   verb	            run, runs, running, eat, ate, eating
+    X	   other	        sfpksdpsxmsa
+    SPACE  space	    
     '''
     
     nlp = spacy.load('en_core_web_sm')
-    df['preproc_parallel'] = preprocess_parallel(df['article_text'], chunksize=1000)
+    df['preproc_parallel'] = preprocess_parallel(df['article_text'], df, chunksize=1000)
     df['Count'] = [Counter(l) for l in df['preproc_parallel']]
-    df2 = pd.concat([df.drop(columns=['Count', 'article_text', 'preproc_parallel'], inplace=True),     df['Count'].apply(pd.Series)], axis=1)
+    df2 = pd.concat([df.drop(columns=['Count', 'article_text', 'preproc_parallel', 'domain_pk', 'domain_name',
+                                     'article_url']),df['Count'].apply(pd.Series)], axis=1)
     df2.fillna(value=0, inplace=True)
     return df2 

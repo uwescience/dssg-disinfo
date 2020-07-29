@@ -1,6 +1,6 @@
 import spacy
 from spacy.lang.en import English
-from joblib import Parallel, delayed
+
 
 
 def get_sent(doc):
