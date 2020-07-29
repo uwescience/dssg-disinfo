@@ -137,6 +137,6 @@ SPACE  space
     nlp = spacy.load('en_core_web_sm')
     df['preproc_parallel'] = preprocess_parallel(df['article_text'], chunksize=1000)
     df['Count'] = [Counter(l) for l in df['preproc_parallel']]
-    df2 = pd.concat([df.drop(columns=['Count', 'article_text', 'preproc_parallel'], inplace=True), df['Count'].apply(pd.Series)], axis=1)
+    df2 = pd.concat([df.drop(columns=['Count', 'article_text', 'preproc_parallel'], inplace=True),     df['Count'].apply(pd.Series)], axis=1)
     df2.fillna(value=0, inplace=True)
     return df2 
