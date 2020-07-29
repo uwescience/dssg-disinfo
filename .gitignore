@@ -4,8 +4,6 @@ data/
 .ipynb_checkpoints
 *.pyc
 *.ipynb_checkpoints
-*.ipynb
-!/notebooks/*.ipynb
 .DS_Store
 data/
 *.csv
