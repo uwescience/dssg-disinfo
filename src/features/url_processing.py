@@ -6,7 +6,11 @@ def find_url(text):
     Returns a list of all URLS embedded in a text 
     
     '''
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 592b45fc2cf943c5a7167e130cffcc49220980b0
     urls = []
     urls = (re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text))
     return urls
