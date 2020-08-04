@@ -54,7 +54,7 @@ def LSTM_model(VOCAB_SIZE = 10000, EMBEDDING_DIM = 300, MAX_LENGTH = 681, NUM_EP
 
 
     ### III. Splitting the data into training and testing
-    X = df['article_headline'] + " " + df['article_text'] # including both article text and headline
+    X = df['article_text'] # article_text
     y = df.label
     
     training_sentences, testing_sentences, training_labels, testing_labels = train_test_split(X, y, random_state = 42)
