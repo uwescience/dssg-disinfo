@@ -5,7 +5,7 @@
 ### I. Importing necessary packages
 import numpy as np
 import pandas as pd
-
+import io
 import os
 from dotenv import load_dotenv
 from pathlib import Path  # Python 3.6+ only
@@ -14,6 +14,7 @@ from tensorflow import keras
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.layers.embeddings import Embedding
+from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras import layers
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, LSTM, Conv1D, MaxPooling1D, Dropout, Activation
@@ -32,7 +33,8 @@ def plot_graphs(history, string):
     plt.xlabel("Epochs")
     plt.ylabel(string)
     plt.legend([string, 'val_'+string])
-    plt.show()
+    file_name=string+'.png'
+    plt.savefig(file_name)
     return
 
 def LSTM_model(VOCAB_SIZE = 10000, EMBEDDING_DIM = 300, MAX_LENGTH = 681, NUM_EPOCHS = 5):
@@ -97,10 +99,12 @@ def LSTM_model(VOCAB_SIZE = 10000, EMBEDDING_DIM = 300, MAX_LENGTH = 681, NUM_EP
 
     ### VII. Fitting and running the model
     num_epochs = NUM_EPOCHS
-    history = model.fit(padded, training_labels_final, epochs=num_epochs, validation_data=(testing_padded, testing_labels_final))
+    file_name = 'LSTM_model'+'_'+str(VOCAB_SIZE)+'_'+str(EMBEDDING_DIM)+'_'+str(MAX_LENGTH)+'_'+str(NUM_EPOCHS)+'.log'
+    csv_logger = CSVLogger(file_name, append=True, separator=';')
+    history=model.fit(padded, training_labels_final, epochs=num_epochs, validation_data=(testing_padded, testing_labels_final), callbacks=[csv_logger])
     
-    plot_graphs(history, 'acc')
-    plot_graphs(history, 'loss')
+    #plot_graphs(history, 'accuracy')
+    #plot_graphs(history, 'loss')
     
     return history
 
