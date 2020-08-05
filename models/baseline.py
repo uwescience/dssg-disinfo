@@ -28,12 +28,16 @@ load_dotenv(env_path, override=True)
 
 
 def plot_graphs(history, string):
+    '''
+    history=collected model, string= 'accuracy' or whichever. 
+    It will name the png output file as history+metric
+    '''
     plt.plot(history.history[string])
     plt.plot(history.history['val_'+string])
     plt.xlabel("Epochs")
     plt.ylabel(string)
     plt.legend([string, 'val_'+string])
-    file_name=string+'.png'
+    file_name= f'{history}'+ string + '.png'
     plt.savefig(file_name)
     return
 
