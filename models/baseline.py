@@ -1,5 +1,5 @@
 #--------------------------------
-#       Baseline model 
+#       
 #--------------------------------
 
 ### I. Importing necessary packages
@@ -17,7 +17,7 @@ from keras.layers.embeddings import Embedding
 from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras import layers
 from keras.models import Sequential
-from keras.layers import Dense, Flatten, LSTM, Conv1D, MaxPooling1D, Dropout, Activation
+from keras.layers import Dense, Flatten, LSTM, Bidirectional, Conv1D, MaxPooling1D, Dropout, Activation
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
@@ -27,20 +27,130 @@ env_path = '/data/dssg-disinfo/.env'
 load_dotenv(env_path, override=True)
 
 
-def plot_graphs(history, string):
-    '''
-    history=collected model, string= 'accuracy' or whichever. 
-    It will name the png output file as history+metric
-    '''
-    plt.plot(history.history[string])
-    plt.plot(history.history['val_'+string])
-    plt.xlabel("Epochs")
-    plt.ylabel(string)
-    plt.legend([string, 'val_'+string])
-    file_name= f'{history}'+ string + '.png'
-    plt.savefig(file_name)
-    return
 
+#----------------------------------
+
+#----------------------------------
+
+### Model Registry? 
+
+_model_arch_registry = {}
+
+def register_model_arch(arch_name, create_fn, param_names):
+    """
+    register_model_arch(name, fn, param_names) registers a model architecture
+    with the given name so that it can be built with the build_model() function.
+
+    The name should be a string that identifies the model.
+    The fn should be a function that accepts the parameters in the param_names and
+        yields a sequential model.
+    The param_names should be a list of the names of the parameters that fn requires.
+    """
+    # Save the model
+    _model_arch_registry[arch_name] = (create_fn, param_names)
+
+def build_model_arch(arch_name, param_dict):
+    """
+    Builds a model using the given architecture name and the given parameter
+    dictionary.
+    """
+    # lookup the params and create function:
+    (create_fn, params) = _model_arch_registry[arch_name]
+    # The f(*[...]) syntax means that instead of being called as f([a,b,c]) the
+    # functiion call is converted into f(a, b, c).
+    return create_fn(*[param_dict[k] for k in params])
+
+# Creation function for the basic model architecture:
+def create_basic_model_arch(vocab_size, embedding_dim, max_length):
+    "Creates and returns a basic model architecture."
+    model = Sequential([
+        Embedding(vocab_size, embedding_dim, input_length=max_length),
+        Bidirectional(LSTM(64)), # 64 could be a parameter?
+        Dense(64, activation='relu'), # 64 and 'relu' could be params?
+        Dense(1, activation='sigmoid') # 'sigmoid' could be a param?
+    ])
+    return model
+
+
+# Register the basic model (writing into our dictionary of models)
+register_model_arch("basic", create_basic_model_arch,
+                    ["vocab_size", "embedding_dim", "max_length"])
+
+# ...
+
+def build_model(vocab_size=10000, embedding_dim=300, max_length=681, num_epochs=5, trunc_type='post', oov_tok ='<OOV>', model_arch='basic'):
+    """Builds a model using the passed parameters."""
+    # (This next line could be implemented by using def build_model(**params) instead)
+    params = {
+        'vocab_size': vocab_size,
+        'embedding_dim': embedding_dim,
+        'max_length': max_length,
+        'num_epochs': num_epochs,
+        'trunct_type': trunc_type,
+        'oov_tok': oov_tok,
+        'model_arch': 'basic'
+    }
+                     
+
+    ### IV. Tokenizing, padding, and truncating
+    tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)
+    tokenizer.fit_on_texts(X_train)
+    word_index = tokenizer.word_index
+    X_train_sequences = tokenizer.texts_to_sequences(X_train)
+    X_train_padded = pad_sequences(X_train_sequences,maxlen=max_length, truncating=trunc_type)
+
+    X_test_sequences = tokenizer.texts_to_sequences(X_test)
+    X_test_padded = pad_sequences(X_test_sequences,maxlen=max_length)
+    
+    # ...build up other parts of the model...
+    model = build_model_arch(params['model_arch'], params)
+    # ...etc...
+    return model
+
+ 
+
+def get_data_and_split():
+    '''
+    Fetches the data and splits into train/test
+    '''
+                     
+     # Get the paths
+    DATA_PATH = os.getenv("PATH") # we need to change "PATH" to "DATA_PATH" in the ENV File 
+    CLEAN_DATA = os.getenv("CLEAN_DATA")
+    df = pd.read_csv(os.path.join(DATA_PATH, CLEAN_DATA))
+
+
+    ### III. Splitting the data into training and testing
+    X = df['article_text'] # article_text
+    y = df.label
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 42)
+
+    # making y into np arrays
+    y_train = np.array(y_train)
+    y_test = np.array(y_test)
+    return X_train, X_test, y_train, y_test
+                     
+
+def compile_model(model,loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']):
+                     
+    # Print model layers
+    print("Model summary:")
+    model.summary()
+
+    ### VI. Put model together and run
+    model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+    return model
+                     
+def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, max_length=681, num_epochs=5):
+    ## VII. Fitting and running the model
+    file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(max_length)+'_'+str(num_epochs)+'.log'
+    csv_logger = CSVLogger(file_name, append=True, separator=';')
+    history=model.fit(X_train_padded, y_train, epochs=num_epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
+    return history, model
+
+'''
+                     
 def LSTM_model(VOCAB_SIZE = 10000, EMBEDDING_DIM = 300, MAX_LENGTH = 681, NUM_EPOCHS = 5):
     """
     input:
@@ -54,9 +164,9 @@ def LSTM_model(VOCAB_SIZE = 10000, EMBEDDING_DIM = 300, MAX_LENGTH = 681, NUM_EP
     history: The model fit output
     """
     # Get the paths
-    PATH = os.getenv("PATH")
+    DATA_PATH = os.getenv("PATH") # we need to change "PATH" to "DATA_PATH" in the ENV File 
     CLEAN_DATA = os.getenv("CLEAN_DATA")
-    df = pd.read_csv(os.path.join(PATH, CLEAN_DATA))
+    df = pd.read_csv(os.path.join(DATA_PATH, CLEAN_DATA))
 
 
     ### III. Splitting the data into training and testing
@@ -112,3 +222,18 @@ def LSTM_model(VOCAB_SIZE = 10000, EMBEDDING_DIM = 300, MAX_LENGTH = 681, NUM_EP
     
     return history
 
+
+def plot_graphs(history, string):
+    
+    #history=collected model, string= 'accuracy' or whichever. 
+    #It will name the png output file as history+metric
+    
+    plt.plot(history.history[string])
+    plt.plot(history.history['val_'+string])
+    plt.xlabel("Epochs")
+    plt.ylabel(string)
+    plt.legend([string, 'val_'+string])
+    file_name= f'{history}'+ string + '.png'
+    plt.savefig(file_name)
+    return
+'''
