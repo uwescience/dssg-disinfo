@@ -78,7 +78,7 @@ register_model_arch("basic", create_basic_model_arch,
 
 # ...
 
-def build_model(vocab_size=10000, embedding_dim=300, max_length=681, num_epochs=5, trunc_type='post', oov_tok ='<OOV>', model_arch='basic'):
+def build_model(vocab_size=10000, embedding_dim=300, max_length = 681, num_epochs=5, model_arch='basic'):
     """Builds a model using the passed parameters."""
     # (This next line could be implemented by using def build_model(**params) instead)
     params = {
@@ -86,21 +86,10 @@ def build_model(vocab_size=10000, embedding_dim=300, max_length=681, num_epochs=
         'embedding_dim': embedding_dim,
         'max_length': max_length,
         'num_epochs': num_epochs,
-        'trunct_type': trunc_type,
-        'oov_tok': oov_tok,
         'model_arch': 'basic'
     }
                      
 
-    ### IV. Tokenizing, padding, and truncating
-    tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)
-    tokenizer.fit_on_texts(X_train)
-    word_index = tokenizer.word_index
-    X_train_sequences = tokenizer.texts_to_sequences(X_train)
-    X_train_padded = pad_sequences(X_train_sequences,maxlen=max_length, truncating=trunc_type)
-
-    X_test_sequences = tokenizer.texts_to_sequences(X_test)
-    X_test_padded = pad_sequences(X_test_sequences,maxlen=max_length)
     
     # ...build up other parts of the model...
     model = build_model_arch(params['model_arch'], params)
@@ -109,7 +98,7 @@ def build_model(vocab_size=10000, embedding_dim=300, max_length=681, num_epochs=
 
  
 
-def get_data_and_split():
+def get_data_and_split(vocab_size, max_length):
     '''
     Fetches the data and splits into train/test
     '''
@@ -129,7 +118,19 @@ def get_data_and_split():
     # making y into np arrays
     y_train = np.array(y_train)
     y_test = np.array(y_test)
-    return X_train, X_test, y_train, y_test
+    
+    # Padding and tokenizing 
+    tokenizer = Tokenizer(num_words = vocab_size, oov_token='<OOV>')
+    tokenizer.fit_on_texts(X_train)
+    word_index = tokenizer.word_index
+    X_train_sequences = tokenizer.texts_to_sequences(X_train)
+    X_train_padded = pad_sequences(X_train_sequences,maxlen=max_length, truncating='post')
+    
+    # turning to sequence 
+    X_test_sequences = tokenizer.texts_to_sequences(X_test)
+    X_test_padded = pad_sequences(X_test_sequences,maxlen=max_length)
+    
+    return X_train_padded, X_test_padded, y_train, y_test
                      
 
 def compile_model(model,loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']):
@@ -143,6 +144,10 @@ def compile_model(model,loss='binary_crossentropy', optimizer='adam', metrics=['
     return model
                      
 def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, max_length=681, num_epochs=5):
+    
+    ## Fetching data and splitting/tokenizing/padding
+    (X_train_padded, X_test_padded, y_train, y_test) = get_data_and_split(vocab_size, max_length)
+    
     ## VII. Fitting and running the model
     file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(max_length)+'_'+str(num_epochs)+'.log'
     csv_logger = CSVLogger(file_name, append=True, separator=';')
