@@ -21,44 +21,18 @@ from keras.layers import Dense, Flatten, LSTM, Bidirectional, Conv1D, MaxPooling
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
+
+#Import Model Registry
+#import model_registry
+#from model_registry import *
+import model_arch
+from model_arch import *
+
 ### II. Import data
 # Path to the environment variables file .env
 env_path = '/data/dssg-disinfo/.env'
 load_dotenv(env_path, override=True)
 
-
-
-#----------------------------------
-
-#----------------------------------
-
-### Model Registry? 
-
-_model_arch_registry = {}
-
-def register_model_arch(arch_name, create_fn, param_names):
-    """
-    register_model_arch(name, fn, param_names) registers a model architecture
-    with the given name so that it can be built with the build_model() function.
-
-    The name should be a string that identifies the model.
-    The fn should be a function that accepts the parameters in the param_names and
-        yields a sequential model.
-    The param_names should be a list of the names of the parameters that fn requires.
-    """
-    # Save the model
-    _model_arch_registry[arch_name] = (create_fn, param_names)
-
-def build_model_arch(arch_name, param_dict):
-    """
-    Builds a model using the given architecture name and the given parameter
-    dictionary.
-    """
-    # lookup the params and create function:
-    (create_fn, params) = _model_arch_registry[arch_name]
-    # The f(*[...]) syntax means that instead of being called as f([a,b,c]) the
-    # functiion call is converted into f(a, b, c).
-    return create_fn(*[param_dict[k] for k in params])
 
 # Creation function for the basic model architecture:
 def create_basic_model_arch(vocab_size, embedding_dim, max_length):
@@ -78,14 +52,14 @@ register_model_arch("basic", create_basic_model_arch,
 
 # ...
 
-def build_model(vocab_size=10000, embedding_dim=300, max_length = 681, num_epochs=5, model_arch='basic'):
+def build_model(vocab_size=10000, embedding_dim=300, max_length = 681, epochs=5, model_arch='basic'):
     """Builds a model using the passed parameters."""
     # (This next line could be implemented by using def build_model(**params) instead)
     params = {
         'vocab_size': vocab_size,
         'embedding_dim': embedding_dim,
         'max_length': max_length,
-        'num_epochs': num_epochs,
+        'epochs': epochs,
         'model_arch': 'basic'
     }
                      
@@ -143,16 +117,18 @@ def compile_model(model,loss='binary_crossentropy', optimizer='adam', metrics=['
     model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
     return model
                      
-def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, max_length=681, num_epochs=5):
+def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, max_length=681, epochs=5):
     
     ## Fetching data and splitting/tokenizing/padding
     (X_train_padded, X_test_padded, y_train, y_test) = get_data_and_split(vocab_size, max_length)
     
     ## VII. Fitting and running the model
-    file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(max_length)+'_'+str(num_epochs)+'.log'
+    file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(max_length)+'_'+str(epochs)+'.log'
     csv_logger = CSVLogger(file_name, append=True, separator=';')
-    history=model.fit(X_train_padded, y_train, epochs=num_epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
+    history=model.fit(X_train_padded, y_train, epochs=epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
     return history, model
+
+
 
 '''
                      
