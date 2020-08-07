@@ -35,44 +35,42 @@ load_dotenv(env_path, override=True)
 
 
 # Creation function for the basic model architecture:
-def create_basic_model_arch(vocab_size, embedding_dim, max_length):
+def create_basic_model_arch(vocab_size, embedding_dim, maxlen):
     "Creates and returns a basic model architecture."
-    model = Sequential([
-        Embedding(vocab_size, embedding_dim, input_length=max_length),
-        Bidirectional(LSTM(64)), # 64 could be a parameter?
-        Dense(64, activation='relu'), # 64 and 'relu' could be params?
-        Dense(1, activation='sigmoid') # 'sigmoid' could be a param?
-    ])
+    model = Sequential()
+    model.add(Embedding(vocab_size, embedding_dim, input_length=maxlen))
+    model.add(Bidirectional(LSTM(64))) # 64 could be a parameter?
+    model.add(Dense(64, activation='relu')) # 64 and 'relu' could be params?
+    model.add(Dense(1, activation='sigmoid')) # 'sigmoid' could be a param?
     return model
 
 
 # Register the basic model (writing into our dictionary of models)
 register_model_arch("basic", create_basic_model_arch,
-                    ["vocab_size", "embedding_dim", "max_length"])
+                    ["vocab_size", "embedding_dim", "maxlen"])
 
 # ...
 
-def build_model(vocab_size=10000, embedding_dim=300, max_length = 681, epochs=5, model_arch='basic'):
+def build_model(vocab_size=10000, embedding_dim=300, maxlen = 681, epochs=5, model_arch='basic'):
     """Builds a model using the passed parameters."""
     # (This next line could be implemented by using def build_model(**params) instead)
     params = {
         'vocab_size': vocab_size,
         'embedding_dim': embedding_dim,
-        'max_length': max_length,
+        'maxlen': maxlen,
         'epochs': epochs,
         'model_arch': 'basic'
     }
-                     
-
     
     # ...build up other parts of the model...
     model = build_model_arch(params['model_arch'], params)
     # ...etc...
+    
     return model
 
  
 
-def get_data_and_split(vocab_size, max_length):
+def get_data_and_split(vocab_size, maxlen):
     '''
     Fetches the data and splits into train/test
     '''
@@ -81,33 +79,38 @@ def get_data_and_split(vocab_size, max_length):
     DATA_PATH = os.getenv("PATH") # we need to change "PATH" to "DATA_PATH" in the ENV File 
     CLEAN_DATA = os.getenv("CLEAN_DATA")
     df = pd.read_csv(os.path.join(DATA_PATH, CLEAN_DATA))
-
-
-    ### III. Splitting the data into training and testing
-    X = df['article_text'] # article_text
-    y = df.label
     
-    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state = 42)
+    ### III. Splitting the data into training and testing
+    sentences = df['article_text'].values
+    y = df['label'].values
 
+    # Train-test split
+    sentences_train, sentences_test, y_train, y_test = train_test_split(
+        sentences, y, test_size=0.25, random_state = 42)
+    
     # making y into np arrays
     y_train = np.array(y_train)
     y_test = np.array(y_test)
+
+    # Adding 1 because of reserved 0 index
+    vocab_size = len(tokenizer.word_index) + 1
     
-    # Padding and tokenizing 
+    # Tokenize words
     tokenizer = Tokenizer(num_words = vocab_size, oov_token='<OOV>')
-    tokenizer.fit_on_texts(X_train)
-    word_index = tokenizer.word_index
-    X_train_sequences = tokenizer.texts_to_sequences(X_train)
-    X_train_padded = pad_sequences(X_train_sequences,maxlen=max_length, truncating='post')
+    tokenizer.fit_on_texts(sentences_train)
+    X_train = tokenizer.texts_to_sequences(sentences_train)
+    X_test = tokenizer.texts_to_sequences(sentences_test)
+
+    # Pad sequences with zeros
+    X_train = pad_sequences(X_train, padding='post', maxlen=maxlen, truncating='post')
+    X_test = pad_sequences(X_test, padding='post', maxlen=maxlen, truncating='post')
     
-    # turning to sequence 
-    X_test_sequences = tokenizer.texts_to_sequences(X_test)
-    X_test_padded = pad_sequences(X_test_sequences,maxlen=max_length)
-    
-    return X_train_padded, X_test_padded, y_train, y_test
+    return X_train, X_test, y_train, y_test
                      
 
-def compile_model(model,loss='binary_crossentropy', optimizer='adam', metrics=['accuracy']):
+def compile_model(optimizer='adam',
+                  loss='binary_crossentropy',
+                  metrics=['accuracy']):
                      
     # Print model layers
     print("Model summary:")
@@ -117,13 +120,13 @@ def compile_model(model,loss='binary_crossentropy', optimizer='adam', metrics=['
     model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
     return model
                      
-def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, max_length=681, epochs=5):
+def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, epochs=5):
     
     ## Fetching data and splitting/tokenizing/padding
-    (X_train_padded, X_test_padded, y_train, y_test) = get_data_and_split(vocab_size, max_length)
+    (X_train_padded, X_test_padded, y_train, y_test) = get_data_and_split(vocab_size, maxlen)
     
     ## VII. Fitting and running the model
-    file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(max_length)+'_'+str(epochs)+'.log'
+    file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(maxlen)+'_'+str(epochs)+'.log'
     csv_logger = CSVLogger(file_name, append=True, separator=';')
     history=model.fit(X_train_padded, y_train, epochs=epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
     return history, model
