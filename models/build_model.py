@@ -10,16 +10,22 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path  # Python 3.6+ only
 
-from tensorflow import keras
-from keras.preprocessing.text import Tokenizer
-from keras.preprocessing.sequence import pad_sequences
-from keras.layers.embeddings import Embedding
+#from tensorflow import keras
+from tensorflow.keras.preprocessing.text import Tokenizer
+#from keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+#from keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.layers import (Embedding, Dense, LSTM, Bidirectional,
+                                    Dropout, Activation, Concatenate,
+                                    Flatten, Conv1D, MaxPooling1D)
 from tensorflow.keras.callbacks import CSVLogger
-from tensorflow.keras import layers
+from tensorflow.keras import (Input, Model, layers)
+#from tensorflow.keras.layers import ()
 from keras.models import Sequential
-from keras.layers import Dense, Flatten, LSTM, Bidirectional, Conv1D, MaxPooling1D, Dropout, Activation
+#from keras.layers import Flatten, Conv1D, MaxPooling1D
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+
 
 
 #Import Model Registry
@@ -28,9 +34,8 @@ import matplotlib.pyplot as plt
 import model_arch
 from model_arch import *
 
-
 import get_data
-from get_data import get_data_and_split
+from get_data import *
 
 ### II. Import data
 # Path to the environment variables file .env
@@ -59,7 +64,64 @@ def build_model(vocab_size=10000, embedding_dim=300, maxlen = 681, epochs=5, mod
     
     return model
 
- 
+
+def build_multi_input_model(vocab_size=10000, embedding_dim=300):
+    """ build model that accepts text and linguistic features, 
+    hence multi_input
+    """
+    nlp_input=Input(shape=[None]) # Input layer for text
+    meta_input=Input(shape=(22,)) # Input layer for 22 linguistic feature columns
+    #embeddings=Embedding(vocab_size, embedding_dim) # Embedding layer
+    #nlp_embeddings=embeddings(nlp_input) # text embeddings
+    nlp_embeddings=Embedding(vocab_size, embedding_dim)(nlp_input)
+    nlp_LSTM=LSTM(64)(nlp_embeddings) # text embeddings LSTM
+    x = Concatenate()([nlp_LSTM, meta_input]) # Merge text LSTM with linguistic features
+    x = Dense(1, activation='sigmoid')(x) # Output layer
+    
+    model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
+
+    return model
+
+
+
+def compile_model(model, optimizer='adam',
+                  loss='binary_crossentropy',
+                  metrics=['accuracy']):
+    """ compile model
+    """
+    # Print model layers
+    print("Model summary:")
+    model.summary()
+
+    ### VI. Put model together and run
+    model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+    
+    return model
+
+                     
+def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, epochs=5):
+    
+    ## Fetching data and splitting/tokenizing/padding
+    (X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size, maxlen)
+    
+    ## VII. Fitting and running the model
+    file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(maxlen)+'_'+str(epochs)+'.log'
+    csv_logger = CSVLogger(file_name, append=True, separator=';')
+    history=model.fit(X_train_padded, y_train, epochs=epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
+    return history, model
+
+
+def fit_and_run_multiple_input_model(model, vocab_size=10000, maxlen=681, epochs=5):
+    
+    ## Fetching data
+    nlp_data, data_meta, y = get_data_multiple_input_model(vocab_size, maxlen)
+    
+    history=model.fit([[nlp_data, data_meta]], y,
+                      validation_split=0.25, epochs =epochs)
+    return history
+
+
+""" This is commented because get_data_and_split is now being called from get_data.py module. This is double.
 
 def get_data_and_split(vocab_size, maxlen):
     '''
@@ -97,31 +159,8 @@ def get_data_and_split(vocab_size, maxlen):
     X_test = pad_sequences(X_test, padding='post', maxlen=maxlen, truncating='post')
     
     return X_train, X_test, y_train, y_test
-                     
 
-def compile_model(model, optimizer='adam',
-                  loss='binary_crossentropy',
-                  metrics=['accuracy']):
-                     
-    # Print model layers
-    print("Model summary:")
-    model.summary()
-
-    ### VI. Put model together and run
-    model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
-    
-    return model
-                     
-def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, epochs=5):
-    
-    ## Fetching data and splitting/tokenizing/padding
-    (X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size, maxlen)
-    
-    ## VII. Fitting and running the model
-    file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(maxlen)+'_'+str(epochs)+'.log'
-    csv_logger = CSVLogger(file_name, append=True, separator=';')
-    history=model.fit(X_train_padded, y_train, epochs=epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
-    return history, model
+"""
 
 
 
