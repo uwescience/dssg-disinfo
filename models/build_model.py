@@ -49,40 +49,34 @@ load_dotenv(env_path, override=True)
 
 def build_model(vocab_size=10000, embedding_dim=300, maxlen = 681, epochs=5, model_arch='basic'):
     """Builds a model using the passed parameters."""
-    # (This next line could be implemented by using def build_model(**params) instead)
-    params = {
-        'vocab_size': vocab_size,
-        'embedding_dim': embedding_dim,
-        'maxlen': maxlen,
-        'epochs': epochs,
-        'model_arch': 'basic'
-    }
     
-    # ...build up other parts of the model...
-    model = build_model_arch(params['model_arch'], params)
-    # ...etc...
-    
+    if(model_arch=='basic'):
+        # (This next line could be implemented by using def build_model(**params) instead)
+        params = {
+            'vocab_size': vocab_size,
+            'embedding_dim': embedding_dim,
+            'maxlen': maxlen,
+            'epochs': epochs,
+            'model_arch': 'basic'
+        }
+
+        # ...build up other parts of the model...
+        model = build_model_arch(params['model_arch'], params)
+        # ...etc...
+        
+    elif model_arch == 'multiple':
+        nlp_input=Input(shape=[None]) # Input layer for text
+        meta_input=Input(shape=(22,)) # Input layer for 22 linguistic feature columns
+        nlp_embeddings=Embedding(vocab_size, embedding_dim)(nlp_input)
+        nlp_LSTM=LSTM(64)(nlp_embeddings) # text embeddings LSTM
+        x = Concatenate()([nlp_LSTM, meta_input]) # Merge text LSTM with linguistic features
+        x = Dense(1, activation='sigmoid')(x) # Output layer
+        model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
+        
+    else:
+        print("Wrong model architecture!")
+        
     return model
-
-
-def build_multi_input_model(vocab_size=10000, embedding_dim=300):
-    """ build model that accepts text and linguistic features, 
-    hence multi_input
-    """
-    nlp_input=Input(shape=[None]) # Input layer for text
-    meta_input=Input(shape=(22,)) # Input layer for 22 linguistic feature columns
-    #embeddings=Embedding(vocab_size, embedding_dim) # Embedding layer
-    #nlp_embeddings=embeddings(nlp_input) # text embeddings
-    nlp_embeddings=Embedding(vocab_size, embedding_dim)(nlp_input)
-    nlp_LSTM=LSTM(64)(nlp_embeddings) # text embeddings LSTM
-    x = Concatenate()([nlp_LSTM, meta_input]) # Merge text LSTM with linguistic features
-    x = Dense(1, activation='sigmoid')(x) # Output layer
-    
-    model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
-
-    return model
-
-
 
 def compile_model(model, optimizer='adam',
                   loss='binary_crossentropy',
@@ -99,26 +93,28 @@ def compile_model(model, optimizer='adam',
     return model
 
                      
-def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, epochs=5):
+def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, epochs=5, model_arch='basic'):
     
-    ## Fetching data and splitting/tokenizing/padding
-    (X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size, maxlen)
-    
-    ## VII. Fitting and running the model
-    file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(maxlen)+'_'+str(epochs)+'.log'
-    csv_logger = CSVLogger(file_name, append=True, separator=';')
-    history=model.fit(X_train_padded, y_train, epochs=epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
-    return history, model
+    if model_arch == 'basic':
+        
+        ## Fetching data and splitting/tokenizing/padding
+        (X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size, maxlen)
 
-
-def fit_and_run_multiple_input_model(model, vocab_size=10000, maxlen=681, epochs=5):
-    
-    ## Fetching data
-    nlp_data, data_meta, y = get_data_multiple_input_model(vocab_size, maxlen)
-    
-    history=model.fit([[nlp_data, data_meta]], y,
+        ## VII. Fitting and running the model
+        file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(maxlen)+'_'+str(epochs)+'.log'
+        csv_logger = CSVLogger(file_name, append=True, separator=';')
+        history=model.fit(X_train_padded, y_train, epochs=epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
+        
+    elif model_arch == 'multiple':
+        
+        nlp_data, data_meta, y = get_data_multiple_input_model(vocab_size, maxlen)
+        history=model.fit([[nlp_data, data_meta]], y,
                       validation_split=0.25, epochs =epochs)
-    return history
+    else:
+        
+        print("Wrong model architecture!")
+        
+    return history, model
 
 
 """ This is commented because get_data_and_split is now being called from get_data.py module. This is double.

@@ -13,14 +13,23 @@ from build_model import *
 #(X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size=10000, maxlen=681)
 
 def run_model(model_arch='basic'):
-    model= build_model(model_arch=model_arch)
-    compiled_model= compile_model(model)
-    fitted_model= fit_and_run_model(compiled_model)
-    return compiled_model, fitted_model
-
-def run_multiple_input_model():
-    model=build_multi_input_model(vocab_size=10000, embedding_dim=300)
-    compiled_model=compile_model(model)
-    history = fit_and_run_multiple_input_model(compiled_model, vocab_size=10000, embedding_dim=300, maxlen=681, epochs=5)
+    
+    if model_arch == 'basic': 
+        model= build_model(model_arch=model_arch)
+        compiled_model= compile_model(model)
+        history, fitted_model= fit_and_run_model(compiled_model)
+        #return compiled_model, fitted_model
+    
+    elif model_arch == 'multiple':
+        model=build_model(vocab_size=10000, embedding_dim=300, model_arch=model_arch)
+        compiled_model=compile_model(model)
+        history, fitted_model = fit_and_run_model(compiled_model, vocab_size=10000, maxlen=681, epochs=1, model_arch=model_arch)
+    
+    elif model_arch == 'word_embedding':
+        # The code for word embeddings will come here
+        history = "blah blah blah"
+        
+    else:
+        print("Invalid model arch entered!")
+    
     return history
-
