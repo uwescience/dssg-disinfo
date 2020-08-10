@@ -47,12 +47,15 @@ load_dotenv(env_path, override=True)
 #WHERE BASELINE MODEL WAS
 # ...
 
-def build_model(vocab_size=10000, embedding_dim=300, maxlen = 681, epochs=5, model_arch='basic'):
+def build_model(bidir_num_filters=64, dense_1_filters=10, optimizer='adam', vocab_size=10000, embedding_dim=300, maxlen = 681, epochs=5, model_arch='basic'):
     """Builds a model using the passed parameters."""
     
     if(model_arch=='basic'):
         # (This next line could be implemented by using def build_model(**params) instead)
         params = {
+            'bidir_num_filters': bidir_num_filters,
+            'dense_1_filters': dense_1_filters,
+            'optimizer': optimizer,
             'vocab_size': vocab_size,
             'embedding_dim': embedding_dim,
             'maxlen': maxlen,
@@ -103,7 +106,7 @@ def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, ep
         ## VII. Fitting and running the model
         file_name = 'LSTM_model'+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(maxlen)+'_'+str(epochs)+'.log'
         csv_logger = CSVLogger(file_name, append=True, separator=';')
-        history=model.fit(X_train_padded, y_train, epochs=epochs, validation_data=(X_test_padded, y_test), callbacks=[csv_logger])
+        history=model.fit(X_train, y_train, epochs=epochs, validation_data=(X_test, y_test), callbacks=[csv_logger])
         
     elif model_arch == 'multiple':
         

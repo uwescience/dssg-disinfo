@@ -48,7 +48,7 @@ def get_data_and_split(vocab_size, maxlen):
     y_test = np.array(y_test)
 
     # Adding 1 because of reserved 0 index
-    vocab_size = len(tokenizer.word_index) + 1
+    #vocab_size = len(tokenizer.word_index) + 1
     
     # Tokenize words
     tokenizer = Tokenizer(num_words = vocab_size, oov_token='<OOV>')
