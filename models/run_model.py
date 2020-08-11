@@ -12,16 +12,21 @@ from build_model import *
 
 #(X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size=10000, maxlen=681)
 
-def run_model(model_arch='basic'):
+def run_model(model_arch='basic', **copacabana):
+    # Ask user if they need hypertuning
+    hypertuning_choice=input("Do you want hypertuning?y/n.")
     
-    if model_arch == 'basic': 
-        model= build_model(model_arch=model_arch)
+    if model_arch == 'basic':
+        model= build_model(model_arch=model_arch, **copacabana)
         compiled_model= compile_model(model)
-        history, fitted_model= fit_and_run_model(compiled_model)
-        #return compiled_model, fitted_model
+        if do_you_want_hypertuning == 'y':
+            hypertuned_compiled_model=I_will_hypertune_you(compiled_model)
+            history, fitted_model= fit_and_run_model(hypertuned_compiled_model)
+        else:
+            history, fitted_model= fit_and_run_model(compiled_model)
     
     elif model_arch == 'multiple':
-        model=build_model(vocab_size=10000, embedding_dim=300, model_arch=model_arch)
+        model=build_model(model_arch=model_arch, **copacabana)
         compiled_model=compile_model(model)
         history, fitted_model = fit_and_run_model(compiled_model, vocab_size=10000, maxlen=681, epochs=10, model_arch=model_arch)
     

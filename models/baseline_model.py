@@ -38,14 +38,6 @@ def create_basic_model_arch(bidir_num_filters, dense_1_filters, vocab_size, embe
                   metrics=['accuracy'])
     return model
 
-bidir_num_filters=64
-dense_1_filters=10
-vocab_size=10000 
-embedding_dim=300
-maxlen=681
-optimizer='adam'
-
-
 # Register the basic model (writing into our dictionary of models)
 register_model_arch("basic", create_basic_model_arch,
                     ["bidir_num_filters", "dense_1_filters", "vocab_size", "embedding_dim", "maxlen",   "optimizer"])
