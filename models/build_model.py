@@ -71,7 +71,7 @@ def build_model(bidir_num_filters=64, dense_1_filters=10, optimizer='adam', voca
         
     return model
 
-def fit_and_run_embedding_model(bidir_num_filters=64, dense_1_filters=10, embedding_path=None, embedding_dim=300, maxlen=681, epochs=10, model_arch=model_arch):
+def fit_and_run_embedding_model(bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, embedding_path=None, embedding_dim=300, maxlen=681, epochs=10, model_arch=model_arch):
         # Get the paths
         DATA_PATH = os.getenv("DATA_PATH")
         ALL_FEATURES_DATA = os.getenv("ALL_FEATURES_DATA")
@@ -175,7 +175,6 @@ def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, ep
 def create_embedding_matrix(filepath, word_index, embedding_dim):
     vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
     embedding_matrix = np.zeros((vocab_size, embedding_dim))
-    #n=0
     with open(filepath) as f:
         for line in f:
             l = len(line.split())
