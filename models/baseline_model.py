@@ -25,6 +25,8 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 
+
+
 def create_basic_model_arch(bidir_num_filters, dense_1_filters, vocab_size, embedding_dim, maxlen, optimizer):
     model = Sequential()
     model.add(layers.Embedding(vocab_size, embedding_dim, input_length=maxlen))
@@ -37,6 +39,7 @@ def create_basic_model_arch(bidir_num_filters, dense_1_filters, vocab_size, embe
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
     return model
+
 
 # Register the basic model (writing into our dictionary of models)
 register_model_arch("basic", create_basic_model_arch,

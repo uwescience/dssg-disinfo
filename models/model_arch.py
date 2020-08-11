@@ -34,6 +34,22 @@ load_dotenv(env_path, override=True)
 
 _model_arch_registry = {}
 
+def get_model_params(model_arch='basic'):
+    
+    
+      if(model_arch=='basic'):
+        # (This next line could be implemented by using def build_model(**params) instead)
+        params = {
+            'bidir_num_filters': bidir_num_filters,
+            'dense_1_filters': dense_1_filters,
+            'optimizer': optimizer,
+            'vocab_size': vocab_size,
+            'embedding_dim': embedding_dim,
+            'maxlen': maxlen,
+            'epochs': epochs,
+            'model_arch': 'basic'
+        }
+
 def register_model_arch(arch_name, create_fn, param_names):
     """
     register_model_arch(name, fn, param_names) registers a model architecture
@@ -58,3 +74,6 @@ def build_model_arch(arch_name, param_dict):
     # functiion call is converted into f(a, b, c).
     return create_fn(*[param_dict[k] for k in params])
 
+
+        
+        

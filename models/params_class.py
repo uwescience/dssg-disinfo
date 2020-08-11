@@ -6,7 +6,7 @@ class Params(object):
     # PARAMETERS THAT WON't CHANGE And can be inherited by all models
     and is immutable
     vocab_size = 10000
-    max_length=681
+    maxlen=681
     # define the default parameters live in the init argument list:
     def __init__(self,
                  oov_token='<OOV>',
@@ -17,7 +17,7 @@ class Params(object):
                  optimizer='adam',
                  ):
         self.vocab_size = vocab_size
-        self.max_length = max_length
+        self.maxlen = maxlen
         self.oov_token = oov_token
         self.truncating = truncating
         self.embedding_dim = embedding_dim
@@ -27,7 +27,7 @@ class Params(object):
    
 
         
-def clean_rnn(params):
+'''def clean_rnn(params):
     """ ... """
     vocab_size = params.vocab_size
     max_length = params.max_length
@@ -40,4 +40,4 @@ def clean_rnn(params):
     return vocab_size, max_length, oov_token, truncating, embedding_dim, input_length, epochs, optimizer
 
 # instantiates the params object
-params = Params()
+params = Params()'''
