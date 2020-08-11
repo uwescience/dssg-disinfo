@@ -36,8 +36,11 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
     ALL_FEATURES_DATA = os.getenv("ALL_FEATURES_DATA")
     df = pd.read_csv(os.path.join(DATA_PATH, ALL_FEATURES_DATA))
     
+    
+    
     ### III. Splitting the data into training and testing COULD USE METDATA ONE HERE
     
+    y = df['label'].values
    
     if multiple==True:
         
@@ -51,7 +54,7 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
               'PART','INTJ','SCONJ','sent_count','ratio_stops_tokens',
               'len_first_caps','len_all_caps']].values
         
-        y = df['label'].values
+        
         
         sentences_train, sentences_test, meta_data_train, meta_data_test, y_train, y_test = train_test_split(
             train_nlp_data, train_meta_data, y, test_size=0.25, random_state = 42)
@@ -70,7 +73,7 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
     # Train-test split for single input model
     
         sentences = df['article_text'].values
-        y = df['label'].values
+   
     
         sentences_train, sentences_test, y_train, y_test = train_test_split(
             sentences, y, test_size=0.25, random_state = 42)
@@ -94,7 +97,9 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
     X_train = pad_sequences(X_train, padding='post', maxlen=maxlen, truncating='post')
     X_test = pad_sequences(X_test, padding='post', maxlen=maxlen, truncating='post')
     
-    
-    return X_train, X_test, meta_data_train, meta_data_test, y_train, y_test
+    if multiple==True:
+        return X_train, X_test, meta_data_train, meta_data_test, y_train, y_test
+    else:
+         return X_train, X_test, y_train, y_test
 
 
