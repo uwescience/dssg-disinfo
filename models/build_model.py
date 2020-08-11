@@ -41,8 +41,9 @@ load_dotenv(env_path, override=True)
 def build_model(model_arch=None, **copacabana):
     """Builds a model using the passed parameters."""
     # Set default parameters
-    if model_arch=='None' | 'basic':
-            default_dict = dict(bidir_num_filters=64, 
+    if (model_arch=='None' or model_arch=='basic'):
+        model = build_model_arch(params['model_arch'], copacabana) #copacabana is a dictionary so don't need **
+        '''default_dict = dict(bidir_num_filters=64, 
                             dense_1_filters=10, 
                             optimizer='adam', 
                             vocab_size=10000, #FLAG TO CHANGE TO CLASS DEF!
@@ -52,8 +53,8 @@ def build_model(model_arch=None, **copacabana):
                             model_arch='basic', 
                             embedding_path=None)
             copacabana = {k: copacabana.get(k, default_dict[k]) for k in default_dict.keys()}
-    elif model_arch == 'multiple':
-            '''default_dict = dict(bidir_num_filters=64, 
+        elif model_arch == 'multiple':
+            ''''''default_dict = dict(bidir_num_filters=64, 
                             dense_1_filters=10, 
                             optimizer='adam', 
                             vocab_size=10000, #FLAG TO CHANGE TO CLASS DEF!
@@ -62,11 +63,11 @@ def build_model(model_arch=None, **copacabana):
                             epochs=5, 
                             model_arch='basic', 
                             embedding_path=None)'''
-            print("Need to enter defaults for multiple input model!!")
-            #copacabana = {k: copacabana.get(k, default_dict[k]) for k in default_dict.keys()}
-
+            #print("Need to enter defaults for multiple input model!!")
+            #copacabana = {k: copacabana.get(k, default_dict[k]) for k in default_dict.keys()}''''''
+        ''''''
     # ...build up other parts of the model...
-    model = build_model_arch(params['model_arch'], copacabana) #copacabana is a dictionary so don't need **
+        #model = build_model_arch(params['model_arch'], copacabana) #copacabana is a dictionary so don't need **
     # ...etc...
         
     elif model_arch == 'multiple':

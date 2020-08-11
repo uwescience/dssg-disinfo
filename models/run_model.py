@@ -10,16 +10,22 @@ from baseline_model import *
 import build_model
 from build_model import *
 
-import param_tune
-from param_tune import param_tune
+#import param_tune
+#from param_tune import param_tune
 
-#(X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size=10000, maxlen=681)
+import params_class
+params=params_class.params()
 
 def run_model(model_arch='basic', **copacabana):
+    
+    default_params = {value:items for value, items in params.__dict__.items()}
+    copacabana = {k: copacabana.get(k, default_params[k]) for k in default_params.keys()}
+    
     # Ask user if they need hypertuning
     hypertuning_choice=input("Do you want hypertuning?y/n:")
     
     if model_arch == 'basic':
+        
         model= build_model(model_arch=model_arch, **copacabana)
         compiled_model= compile_model(model)
         if hypertuning_choice == 'y':
@@ -40,5 +46,6 @@ def run_model(model_arch='basic', **copacabana):
         
     else:
         print("Invalid model type entered entered!")
+        history=None
     
     return history

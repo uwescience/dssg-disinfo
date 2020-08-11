@@ -34,7 +34,7 @@ def param_tune(model, **copacabana):
     import get_data
     from get_data import get_data_and_split
     #Parameter grid for grid search
-    if model == ‘basic’:
+    if model == 'basic':
         params = {k:v for (k,v) in copacabana.items() if k in get_params_names()....basic_model_params}
     
     param_grid = dict(bidir_num_filters=[32, 64, 128],
