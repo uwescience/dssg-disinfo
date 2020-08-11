@@ -10,3 +10,4 @@ data/
 *.ipynb_checkpoints
 *.ipynb
 !/notebooks/*.ipynb
+models/pretrained_embeddings/
