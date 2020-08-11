@@ -34,7 +34,7 @@ load_dotenv(env_path, override=True)
 
 _model_arch_registry = {}
 
-def get_model_params(model_arch='basic'):
+'''def get_model_params(model_arch='basic'):
     
     
       if(model_arch=='basic'):
@@ -48,7 +48,7 @@ def get_model_params(model_arch='basic'):
             'maxlen': maxlen,
             'epochs': epochs,
             'model_arch': 'basic'
-        }
+        }'''
 
 def register_model_arch(arch_name, create_fn, param_names):
     """

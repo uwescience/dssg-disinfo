@@ -3,9 +3,6 @@ class params(object):
     The RnnParams tracks the parameters for the clean_retinotopy
     function.
     """
-    # PARAMETERS THAT WON't CHANGE And can be inherited by all models
-    vocab_size = 10000
-    maxlen=681
     # define the default parameters live in the init argument list:
     def __init__(self,
                  oov_token='<OOV>',
@@ -15,7 +12,9 @@ class params(object):
                  optimizer='adam',
                  bidir_num_filters=64,
                  dense_1_filters=10,
-                 embedding_path=None
+                 embedding_path=None,
+                 vocab_size = 10000,
+                 maxlen=681
                  ):
         self.oov_token = oov_token
         self.truncating = truncating
@@ -25,6 +24,8 @@ class params(object):
         self.bidir_num_filters=bidir_num_filters
         self.dense_1_filters=dense_1_filters
         self.embedding_path=embedding_path
+        self.vocab_size = vocab_size
+        self.maxlen= maxlen
    
 
         

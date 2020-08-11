@@ -42,7 +42,7 @@ def build_model(model_arch=None, **copacabana):
     """Builds a model using the passed parameters."""
     # Set default parameters
     if (model_arch=='None' or model_arch=='basic'):
-        model = build_model_arch(params['model_arch'], copacabana) #copacabana is a dictionary so don't need **
+        model = build_model_arch(model_arch, copacabana) #],#copacabana is a dictionary so don't need **
         '''default_dict = dict(bidir_num_filters=64, 
                             dense_1_filters=10, 
                             optimizer='adam', 
