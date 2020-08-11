@@ -161,10 +161,10 @@ def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, ep
         
     elif model_arch == 'multiple':
         
-        nlp_data, data_meta, y = get_data_multiple_input_model(vocab_size, maxlen)
-        history = model.fit([[nlp_data, data_meta]], y,
-                            validation_split=0.25,
+        nlp_data_train, nlp_data_test, meta_data_train, meta_data_test, y_train, y_test = get_data_and_split(vocab_size, maxlen, multiple=True)
+        history = model.fit([[nlp_data_train, meta_data_train]], y_train, 
                             epochs =epochs,
+                            validation_data = (nlp_data_test, meta_data_test, y_test),
                            callbacks=[csv_logger])
     else:
         
