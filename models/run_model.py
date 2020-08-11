@@ -23,13 +23,13 @@ def run_model(model_arch='basic'):
     elif model_arch == 'multiple':
         model=build_model(vocab_size=10000, embedding_dim=300, model_arch=model_arch)
         compiled_model=compile_model(model)
-        history, fitted_model = fit_and_run_model(compiled_model, vocab_size=10000, maxlen=681, epochs=1, model_arch=model_arch)
+        history, fitted_model = fit_and_run_model(compiled_model, vocab_size=10000, maxlen=681, epochs=10, model_arch=model_arch)
     
     elif model_arch == 'word_embedding':
-        # The code for word embeddings will come here
-        history = "blah blah blah"
+        embedding_path=input("Enter path of word embedding:")
+        history, fitted_model=fit_and_run_embedding_model(embedding_path=embedding_path, embedding_dim=300, maxlen=681, epochs=10, model_arch=model_arch)
         
     else:
-        print("Invalid model arch entered!")
+        print("Invalid model type entered entered!")
     
     return history
