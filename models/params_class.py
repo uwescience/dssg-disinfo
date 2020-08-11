@@ -3,10 +3,12 @@ class Params(object):
     The RnnParams tracks the parameters for the clean_retinotopy
     function.
     """
+    # PARAMETERS THAT WON't CHANGE And can be inherited by all models
+    and is immutable
+    vocab_size = 10000
+    max_length=681
     # define the default parameters live in the init argument list:
     def __init__(self,
-                 vocab_size=10000,
-                 max_length=681,
                  oov_token='<OOV>',
                  truncating='post',
                  embedding_dim=300,
@@ -22,7 +24,8 @@ class Params(object):
         self.input_length = input_length
         self.epochs = epochs
         self.optimizer = optimizer
-        
+   
+
         
 def clean_rnn(params):
     """ ... """
@@ -35,3 +38,6 @@ def clean_rnn(params):
     epochs = params.epochs
     optimizer = params.optimizer
     return vocab_size, max_length, oov_token, truncating, embedding_dim, input_length, epochs, optimizer
+
+# instantiates the params object
+params = Params()
