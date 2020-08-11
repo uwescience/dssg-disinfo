@@ -22,6 +22,9 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 
+import params_class
+params=params_class.params()
+
 #import get_data
 #from get_data import get_data_and_split
 
@@ -29,27 +32,28 @@ import matplotlib.pyplot as plt
 #from run_model import run_model
 
 
-def param_tune(model, **copacabana):
+
+def param_tune(model):
     '''Runs parameter tuning..'''
     import get_data
     from get_data import get_data_and_split
     #Parameter grid for grid search
-    if model == 'basic':
-        params = {k:v for (k,v) in copacabana.items() if k in get_params_names()....basic_model_params}
+    #params = {k:v for (k,v) in copacabana.items() if k in **copacabana}
     
     param_grid = dict(bidir_num_filters=[32, 64, 128],
                   dense_1_filters=[1],
                   #vocab_size=[5000], #10000,15000,20000], 
                   #embedding_dim=[50],# 100, 300],
                   #maxlen= [681], #[100, 500, 681, 1000], #
-                  optimizer=['adam']) #'SGD'])
+                  optimizer=['adam','nadam']) #'SGD'])
+    
     model = KerasClassifier(build_fn=model,
                         epochs=1, batch_size=10,
                         verbose=False)
     grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid,
                               cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5)
     #pull in data
-    (X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size=10000, maxlen=681)
+    (X_train, X_test, y_train, y_test) = get_data_and_split(params.vocab_size, params.maxlen)
 
     grid_result = grid.fit(X_train, y_train)
     test_accuracy = grid.score(X_test, y_test)

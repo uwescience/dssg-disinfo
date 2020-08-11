@@ -10,8 +10,8 @@ from baseline_model import *
 import build_model
 from build_model import *
 
-#import param_tune
-#from param_tune import param_tune
+import param_tune
+from param_tune import param_tune
 
 import params_class
 params=params_class.params()
