@@ -34,6 +34,9 @@ from get_data import get_data_and_split
 import baseline_model
 from baseline_model import create_basic_model_arch
 
+import multiple_model
+from multiple_model import create_multiple_model_arch
+
 def param_tune(model_arch):
     '''Runs parameter tuning..'''
         
@@ -69,7 +72,28 @@ def param_tune(model_arch):
         return history, grid.best_estimator_
     
     elif model_arch == 'multiple':
-        return None, None
+        model_new = KerasClassifier(build_fn = create_multiple_model_arch) # argument is different architecture building function
+
+        grid = RandomizedSearchCV(estimator=model_new, param_distributions = param_grid, 
+                            cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5, scoring='accuracy')
+        
+        #pull in data
+        ##X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen)
+        nlp_data_train, nlp_data_test, meta_data_train, meta_data_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen, multiple=True)
+        x_nlp_data_train = np.array([nlp_data_train[i][0] for i in range (nlp_data_train.shape[0])]) 
+        x_meta_data_train = np.array([meta_data_train[i][1] for i in range (meta_data_train.shape[0])])
+        
+        x_nlp_data_test = np.array([nlp_data_test[i][0] for i in range (nlp_data_test.shape[0])]) 
+        x_meta_data_test = np.array([meta_data_test[i][1] for i in range (meta_data_test.shape[0])])
+        
+        history = grid.fit(x=[x_nlp_data_train, x_meta_data_train], y=y_train,
+                           callbacks=[csv_logger],
+                           epochs=params.epochs,
+                           validation_data=(x_nlp_data_test, x_meta_data_test, y_test))
+        
+        test_accuracy = grid.score(nlp_data_test, meta_data_test, y_test)
+
+        return history, grid.best_estimator_
     
     elif model_arch == 'word_embedding':
         return None, None
