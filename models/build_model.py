@@ -28,6 +28,7 @@ import model_arch
 from model_arch import *
 import get_data
 from get_data import *
+from word_embedding_arch import *
 
 ### II. Import data
 # Path to the environment variables file .env
@@ -52,6 +53,10 @@ def build_model(model_arch=None, **copacabana):
         x = Concatenate()([nlp_LSTM, meta_input]) # Merge text LSTM with linguistic features
         x = Dense(1, activation='sigmoid')(x) # Output layer
         model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
+        
+    elif (model_arch=='word_embedding'):
+        model = build_model_arch(model_arch, copacabana) # added this becaues I wanted to run model from arch
+        #model = create_word_embd_model_arch(model_arch, copacabana)
         
     else:
         print("Wrong model architecture!")

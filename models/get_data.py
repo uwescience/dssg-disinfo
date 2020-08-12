@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import model_arch
 from model_arch import *
 
-def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
+def get_data_and_split(vocab_size, maxlen, model_arch=None, multiple=False, scaler=False):
     '''
     Fetches the data and splits into train/test
     '''
@@ -87,8 +87,11 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
     # Tokenize words
     tokenizer = Tokenizer(num_words = vocab_size, oov_token='<OOV>')
     tokenizer.fit_on_texts(sentences_train)
+    word_index = tokenizer.word_index
     X_train = tokenizer.texts_to_sequences(sentences_train)
     X_test = tokenizer.texts_to_sequences(sentences_test)
+
+        
 
     # Pad sequences with zeros
     X_train = pad_sequences(X_train, padding='post', maxlen=maxlen, truncating='post')
@@ -96,7 +99,15 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
     
     if multiple==True:
         return X_train, X_test, meta_data_train, meta_data_test, y_train, y_test
+    
+    elif model_arch=='word_embedding':
+        return X_train, X_test, y_train, y_test, word_index
+    
     else:
         return X_train, X_test, y_train, y_test
+   
+    
+
+        
 
 
