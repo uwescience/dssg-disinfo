@@ -1,4 +1,5 @@
 from model_arch import *
+from get_data import *
 
 def create_embedding_matrix(filepath, word_index, embedding_dim):
     vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
@@ -18,8 +19,14 @@ def create_embedding_matrix(filepath, word_index, embedding_dim):
 
 
 
-def create_word_embd_model_arch(word_index, embedding_path, embedding_dim, bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, maxlen=681, optimizer='adam'):
+def create_word_embd_model_arch(embedding_dim, bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, maxlen=681, optimizer='adam'):
     
+    
+    #embedding_path=input("Enter path of word embedding:")
+    embedding_path = '/data/dssg-disinfo/glove.trained.preprocessed.merged1.vectors.300d.txt'
+    
+    (X_train, X_test, y_train, y_test, word_index) = get_data_and_split(vocab_size=10000, maxlen=681, model_arch='word_embedding', 
+                                                                            multiple=False, scaler=False) 
 
 
     embedding_matrix=create_embedding_matrix(filepath=embedding_path,
@@ -34,9 +41,12 @@ def create_word_embd_model_arch(word_index, embedding_path, embedding_dim, bidir
     keras.layers.Dense(1, activation='sigmoid')
         ])
         
+        
+    model.compile(optimizer=optimizer,loss='binary_crossentropy', metrics=['accuracy'])
+    
     return model
 
 # Register the basic model (writing into our dictionary of models)
 register_model_arch("word_embedding", create_word_embd_model_arch,
-                    ["embedding_path", "bidir_num_filters", "dense_1_filters", "vocab_size", "embedding_dim", "maxlen",   "optimizer", "word_index"])
+                    ["embedding_path", "bidir_num_filters", "dense_1_filters", "vocab_size", "embedding_dim", "maxlen",  "optimizer", "word_index"])
         
