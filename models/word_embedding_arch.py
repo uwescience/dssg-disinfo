@@ -23,8 +23,8 @@ def create_word_embd_model_arch(embedding_dim, bidir_num_filters=64, dense_1_fil
     
     
     #embedding_path=input("Enter path of word embedding:")
-    embedding_path = '/data/dssg-disinfo/glove.trained.preprocessed.merged1.vectors.300d.txt'
-    
+    #embedding_path = '/data/dssg-disinfo/glove.trained.preprocessed.merged1.vectors.300d.txt'
+    embedding_path='/data/dssg-disinfo/coronavirus-corpus/chunks/wv.txt' #200 dimension embedding
     (X_train, X_test, y_train, y_test, word_index) = get_data_and_split(vocab_size=10000, maxlen=681, model_arch='word_embedding', 
                                                                             multiple=False, scaler=False) 
 

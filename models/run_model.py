@@ -49,14 +49,6 @@ def run_model(model_arch='basic', **copacabana):
         history, fitted_model = fit_and_run_model(compiled_model, vocab_size=10000, maxlen=681, epochs=10, model_arch=model_arch)
     
     elif model_arch == 'word_embedding': # word embedding model, pulls in word_embedding file specified by user.
-        
-         #connect the path: path/to/wordembeddingfile
-        # have to pull data to build a model for word embedding here NEW
-        #(X_train, X_test, y_train, y_test, word_index) = get_data_and_split(vocab_size=10000, maxlen=681, model_arch=model_arch, 
-                                                                            #multiple=False, scaler=False) 
-        
-        #model = build_model(model_arch=model_arch, embedding_path=embedding_path, embedding_dim=copacabana['embedding_dim'], word_index=word_index)
-        #history, fitted_model=fit_and_run_embedding_model(embedding_path=embedding_path, embedding_dim=300, maxlen=681, epochs=10, model_arch=model_arch)
         history, fitted_model=param_tune(model_arch)
         
     else:

@@ -44,7 +44,7 @@ def param_tune(model_arch):
     param_grid = dict(bidir_num_filters=[32, 64, 128],
                       dense_1_filters=[10],
                       vocab_size=[10000],
-                      embedding_dim=[300],
+                      embedding_dim=[200],
                       maxlen=[681],
                       optimizer=['adam','nadam'])
     
@@ -68,6 +68,9 @@ def param_tune(model_arch):
                            validation_data=(X_test, y_test))
         
         test_accuracy = grid.score(X_test, y_test)
+        
+        print("Best model parameters are:")
+        print(grid_result.best_params_)
 
         return history, grid.best_estimator_
     
@@ -75,16 +78,6 @@ def param_tune(model_arch):
         return None, None
     
     elif model_arch == 'word_embedding':
-        
-        #(embedding_dim, bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, maxlen=681, optimizer='adam')::
-        
-        param_grid_embd = dict(bidir_num_filters=[32, 64, 128],
-                      dense_1_filters=[10],
-                      vocab_size=[10000],
-                      embedding_dim=[300],
-                      maxlen=[681],
-                      optimizer=['adam','nadam']
-                      )
         
         model_new = KerasClassifier(build_fn = create_word_embd_model_arch) # updated this for embd
 
@@ -100,20 +93,12 @@ def param_tune(model_arch):
                            validation_data=(X_test, y_test))
         
         test_accuracy = grid.score(X_test, y_test)
+        
+        print("Best model parameters are:")
+        print(grid_result.best_params_)
 
         return history, grid.best_estimator_
 
     
     else:
         return None, None
-
-'''# Evaluate testing set
-test_accuracy = grid.score(X_test, y_test)
-print(test_accuracy)
-
-print(grid_result.best_score_)
-print(grid_result.best_params_)
-print(grid_result.cv_results_)
-
-results= grid_result
-score=grid.score'''
