@@ -45,13 +45,7 @@ def build_model(model_arch=None, **copacabana):
         model = build_model_arch(model_arch, copacabana)
         
     elif model_arch == 'multiple':
-        nlp_input=Input(shape=[None]) # Input layer for text
-        meta_input=Input(shape=(22,)) # Input layer for 22 linguistic feature columns
-        nlp_embeddings=Embedding(vocab_size, embedding_dim)(nlp_input)
-        nlp_LSTM=LSTM(bidir_num_filters)(nlp_embeddings) # text embeddings LSTM
-        x = Concatenate()([nlp_LSTM, meta_input]) # Merge text LSTM with linguistic features
-        x = Dense(1, activation='sigmoid')(x) # Output layer
-        model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
+        model = build_model_arch(model_arch, copacabana)
         
     else:
         print("Wrong model architecture!")
