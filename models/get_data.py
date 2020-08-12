@@ -30,13 +30,10 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
     '''
     Fetches the data and splits into train/test
     '''
-                     
     # Get the paths
     DATA_PATH = os.getenv("DATA_PATH") # we need to change "PATH" to "DATA_PATH" in the ENV File 
     ALL_FEATURES_DATA = os.getenv("ALL_FEATURES_DATA")
     df = pd.read_csv(os.path.join(DATA_PATH, ALL_FEATURES_DATA))
-    
-    
     
     ### III. Splitting the data into training and testing COULD USE METDATA ONE HERE
     
@@ -100,6 +97,6 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
     if multiple==True:
         return X_train, X_test, meta_data_train, meta_data_test, y_train, y_test
     else:
-         return X_train, X_test, y_train, y_test
+        return X_train, X_test, y_train, y_test
 
 

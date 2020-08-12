@@ -1,4 +1,5 @@
 from keras.wrappers.scikit_learn import KerasClassifier
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import StratifiedKFold
@@ -30,8 +31,8 @@ params=params_class.params()
 
 #import run_model
 #from run_model import run_model
-
-
+import baseline_model
+from baseline_model import create_basic_model_arch
 
 def param_tune(model):
     '''Runs parameter tuning..'''
@@ -41,20 +42,19 @@ def param_tune(model):
     #params = {k:v for (k,v) in copacabana.items() if k in **copacabana}
     
     param_grid = dict(bidir_num_filters=[32, 64, 128],
-                  dense_1_filters=[1],
-                  #vocab_size=[5000], #10000,15000,20000], 
-                  #embedding_dim=[50],# 100, 300],
-                  #maxlen= [681], #[100, 500, 681, 1000], #
-                  optimizer=['adam','nadam']) #'SGD'])
+                  dense_1_filters=[10],
+                    vocab_size=[10000],
+                      embedding_dim=[300],
+                      maxlen=[681],
+                  optimizer=['adam','nadam']) 
     
-    model = KerasClassifier(build_fn=model,
-                        epochs=1, batch_size=10,
-                        verbose=False)
-    grid = RandomizedSearchCV(estimator=model, param_distributions=param_grid,
-                              cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5)
+    model_new = KerasClassifier(build_fn=create_basic_model_arch)
+    
+    grid = RandomizedSearchCV(estimator=model_new, param_distributions=param_grid, 
+                        cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5, scoring='accuracy')
     #pull in data
-    (X_train, X_test, y_train, y_test) = get_data_and_split(params.vocab_size, params.maxlen)
-
+    X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen)
+    #model_new.fit(X_train, y_train)
     grid_result = grid.fit(X_train, y_train)
     test_accuracy = grid.score(X_test, y_test)
     

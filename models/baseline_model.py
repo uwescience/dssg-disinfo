@@ -40,7 +40,7 @@ import matplotlib.pyplot as plt
 
 
 
-def create_basic_model_arch(bidir_num_filters, dense_1_filters, vocab_size, embedding_dim, maxlen, optimizer):
+def create_basic_model_arch(bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, embedding_dim=300, maxlen=681, optimizer='adam'):
     model = Sequential()
     model.add(layers.Embedding(vocab_size, embedding_dim, input_length=maxlen))
     model.add(Bidirectional(LSTM(bidir_num_filters)))

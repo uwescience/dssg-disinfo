@@ -30,8 +30,9 @@ def run_model(model_arch='basic', **copacabana):
         compiled_model= compile_model(model)
         if hypertuning_choice == 'y':
             hypertuned_compiled_model=param_tune(compiled_model)
+                        
             # Need to pull in the outputs from tuning as inputs here:
-            #history, fitted_model= fit_and_run_model(hypertuned_compiled_model)
+            history, fitted_model= fit_and_run_model(hypertuned_compiled_model)
         else:
             history, fitted_model= fit_and_run_model(compiled_model)
     

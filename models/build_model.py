@@ -43,6 +43,7 @@ def build_model(model_arch=None, **copacabana):
     # Set default parameters
     if (model_arch=='None' or model_arch=='basic'):
         model = build_model_arch(model_arch, copacabana) #],#copacabana is a dictionary so don't need **
+        #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         '''default_dict = dict(bidir_num_filters=64, 
                             dense_1_filters=10, 
                             optimizer='adam', 
