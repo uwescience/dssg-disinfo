@@ -10,7 +10,7 @@ import io
 import os
 from dotenv import load_dotenv
 from pathlib import Path  # Python 3.6+ only
-
+from datetime import datetime
 from tensorflow import keras
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
@@ -26,40 +26,56 @@ import matplotlib.pyplot as plt
 import params_class
 params=params_class.params()
 
-#import get_data
-#from get_data import get_data_and_split
+import get_data
+from get_data import get_data_and_split
 
 #import run_model
 #from run_model import run_model
 import baseline_model
 from baseline_model import create_basic_model_arch
 
-def param_tune(model):
+def param_tune(model_arch):
     '''Runs parameter tuning..'''
-    import get_data
-    from get_data import get_data_and_split
+        
     #Parameter grid for grid search
-    #params = {k:v for (k,v) in copacabana.items() if k in **copacabana}
-    
     param_grid = dict(bidir_num_filters=[32, 64, 128],
-                  dense_1_filters=[10],
-                    vocab_size=[10000],
+                      dense_1_filters=[10],
+                      vocab_size=[10000],
                       embedding_dim=[300],
                       maxlen=[681],
-                  optimizer=['adam','nadam']) 
+                      optimizer=['adam','nadam'])
     
-    model_new = KerasClassifier(build_fn=create_basic_model_arch)
+    # File to save the model logs
+    file_name = datetime.now().strftime('%Y%m%d%H%M%S') +'_'+model_arch+'.log'
+    csv_logger = CSVLogger(file_name, append=True, separator=';')
     
-    grid = RandomizedSearchCV(estimator=model_new, param_distributions=param_grid, 
-                        cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5, scoring='accuracy')
-    #pull in data
-    X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen)
-    #model_new.fit(X_train, y_train)
-    grid_result = grid.fit(X_train, y_train)
-    test_accuracy = grid.score(X_test, y_test)
-    
-    return grid.best_estimator_
+    if model_arch == 'basic':
+        
+        model_new = KerasClassifier(build_fn = create_basic_model_arch) # argument is different architecture building function
 
+        grid = RandomizedSearchCV(estimator=model_new, param_distributions=param_grid, 
+                            cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5, scoring='accuracy')
+        
+        #pull in data
+        X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen)
+
+        history = grid.fit(X_train, y_train,
+                           callbacks=[csv_logger],
+                           epochs=params.epochs,
+                           validation_data=(X_test, y_test))
+        
+        test_accuracy = grid.score(X_test, y_test)
+
+        return history, grid.best_estimator_
+    
+    elif model_arch == 'multiple':
+        return None, None
+    
+    elif model_arch == 'word_embedding':
+        return None, None
+    
+    else:
+        return None, None
 
 '''# Evaluate testing set
 test_accuracy = grid.score(X_test, y_test)

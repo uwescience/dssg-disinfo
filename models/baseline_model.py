@@ -39,18 +39,19 @@ import matplotlib.pyplot as plt
     return bidir_num_filters, dense_1_filters, vocab_size, embedding_dim, maxlen, optimizer'''
 
 
-
 def create_basic_model_arch(bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, embedding_dim=300, maxlen=681, optimizer='adam'):
+    
     model = Sequential()
+    
     model.add(layers.Embedding(vocab_size, embedding_dim, input_length=maxlen))
     model.add(Bidirectional(LSTM(bidir_num_filters)))
-    #model.add(layers.Conv1D(num_filters, kernel_size, activation='relu'))
-    #model.add(layers.GlobalMaxPooling1D())
     model.add(layers.Dense(dense_1_filters, activation='relu'))
     model.add(layers.Dense(1, activation='sigmoid'))
+    
     model.compile(optimizer=optimizer,
                   loss='binary_crossentropy',
                   metrics=['accuracy'])
+    
     return model
 
 

@@ -42,34 +42,7 @@ def build_model(model_arch=None, **copacabana):
     """Builds a model using the passed parameters."""
     # Set default parameters
     if (model_arch=='None' or model_arch=='basic'):
-        model = build_model_arch(model_arch, copacabana) #],#copacabana is a dictionary so don't need **
-        #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-        '''default_dict = dict(bidir_num_filters=64, 
-                            dense_1_filters=10, 
-                            optimizer='adam', 
-                            vocab_size=10000, #FLAG TO CHANGE TO CLASS DEF!
-                            embedding_dim=300, 
-                            maxlen = 681, #FLAG TO CHANGE TO CLASS DEF!
-                            epochs=5, 
-                            model_arch='basic', 
-                            embedding_path=None)
-            copacabana = {k: copacabana.get(k, default_dict[k]) for k in default_dict.keys()}
-        elif model_arch == 'multiple':
-            ''''''default_dict = dict(bidir_num_filters=64, 
-                            dense_1_filters=10, 
-                            optimizer='adam', 
-                            vocab_size=10000, #FLAG TO CHANGE TO CLASS DEF!
-                            embedding_dim=300, 
-                            maxlen = 681, #FLAG TO CHANGE TO CLASS DEF!
-                            epochs=5, 
-                            model_arch='basic', 
-                            embedding_path=None)'''
-            #print("Need to enter defaults for multiple input model!!")
-            #copacabana = {k: copacabana.get(k, default_dict[k]) for k in default_dict.keys()}''''''
-        ''''''
-    # ...build up other parts of the model...
-        #model = build_model_arch(params['model_arch'], copacabana) #copacabana is a dictionary so don't need **
-    # ...etc...
+        model = build_model_arch(model_arch, copacabana)
         
     elif model_arch == 'multiple':
         nlp_input=Input(shape=[None]) # Input layer for text
