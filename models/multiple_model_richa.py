@@ -40,30 +40,13 @@ load_dotenv(env_path, override=True)
 
 def create_multiple_model_arch(bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, embedding_dim=300, maxlen=681, optimizer='adam'): #Could we replace with (?): "**copacabana"
     
-    # define two different sets of inputs
-    nlp_input = Input(shape=(vocab_size,embedding_dim)) # Input layer for text
-    meta_input = Input(shape=(vocab_size,22)) # Input layer for 22 linguistic feature columns
-    
-    # BRANCH ONE: nlp_input layer
-    x = Embedding(vocab_size, embedding_dim)(nlp_input)
-    x = LSTM(bidir_num_filters)(x)# text embeddings LSTM
-    x = Model(inputs=nlp_input, outputs=x)
-    
-    # BRANCH TWO: meta_input layer
-    y = Dense(2, activation="relu")(meta_input) #Maya added this layer
-    y = Model(inputs=meta_input, outputs=y)
-    
-    # combine the output of the two branches
-    combined_output = Concatenate(axis=1)([x.output, y.output])
-    combined_input = Concatenate(axis=1)([x.input, y.input])
-    
-    # apply a FC layer and then a regression prediction on the
-    # combined outputs
-    z = Dense(2, activation="relu")(combined_output)
-    z = Dense(1, activation='sigmoid')(z) # Output layer
-    
-    # Final model
-    model = Model(inputs=combined_input, outputs=z)
+    nlp_input = Input(shape=[None]) # Input layer for text
+    meta_input = Input(shape=(22,)) # Input layer for 22 linguistic feature columns
+    nlp_embeddings = Embedding(vocab_size, embedding_dim)(nlp_input)
+    nlp_LSTM = LSTM(bidir_num_filters)(nlp_embeddings) # text embeddings LSTM
+    x = Concatenate()([nlp_LSTM, meta_input]) # Merge text LSTM with linguistic features
+    x = Dense(1, activation='sigmoid')(x) # Output layer
+    model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
     
     # compile may not be necessary
     model.compile(optimizer=optimizer,

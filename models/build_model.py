@@ -29,6 +29,10 @@ from model_arch import *
 import get_data
 from get_data import *
 
+# Importing the default parameters
+import params_class
+params=params_class.params()
+
 ### II. Import data
 # Path to the environment variables file .env
 env_path = '/data/dssg-disinfo/.env'
@@ -40,6 +44,12 @@ load_dotenv(env_path, override=True)
 
 def build_model(model_arch=None, **copacabana):
     """Builds a model using the passed parameters."""
+    
+    # Calling the default parameters
+    default_params = {value:items for value, items in params.__dict__.items()}
+    # Storing all the parameters into copacabana, parameters passed by user will overwrite default
+    copacabana = {k: copacabana.get(k, default_params[k]) for k in default_params.keys()}
+    
     # Set default parameters
     if (model_arch=='None' or model_arch=='basic'):
         model = build_model_arch(model_arch, copacabana)
