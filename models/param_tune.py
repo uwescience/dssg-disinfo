@@ -72,30 +72,53 @@ def param_tune(model_arch):
         return history, grid.best_estimator_
     
     elif model_arch == 'multiple':
-        model_new = KerasClassifier(build_fn = create_multiple_model_arch) # argument is different architecture building function
+        #model_new = KerasClassifier(build_fn = create_multiple_model_arch) # argument is different architecture building function
 
-        grid = RandomizedSearchCV(estimator=model_new, param_distributions = param_grid, 
-                            cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5, scoring='accuracy', n_jobs=1)
+        #grid = RandomizedSearchCV(estimator=model_new, param_distributions = param_grid, 
+        #                    cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5, scoring='accuracy', n_jobs=1)
         
         #pull in data
         ##X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen)
-        nlp_data_train, nlp_data_test, meta_data_train, meta_data_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen, multiple=True)
+        #nlp_data_train, nlp_data_test, meta_data_train, meta_data_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen, multiple=True)
         
         ## merge inputs
-        combi_train = np.concatenate((nlp_data_train, meta_data_train), axis=1)
-        combi_test = np.concatenate((nlp_data_test, meta_data_test), axis=1)
+        #combi_train = np.concatenate((nlp_data_train, meta_data_train), axis=1)
+        #combi_test = np.concatenate((nlp_data_test, meta_data_test), axis=1)
         
-        history = grid.fit(combi_train, y_train,
-                           callbacks=[csv_logger],
-                           epochs=params.epochs,
-                           validation_data=(combi_test, y_test))
+        #history = grid.fit(combi_train, y_train,
+         #                  callbacks=[csv_logger],
+          #                 epochs=params.epochs,
+           #                validation_data=(combi_test, y_test))
         
-        test_accuracy = grid.score(combi_input, y_test)
+        #test_accuracy = grid.score(combi_input, y_test)
         
-        print("The best parameters are:")
-        print(grid.best_params_)
+        #print("The best parameters are:")
+        #print(history.best_params_)
 
-        return history, grid.best_estimator_
+        #return history, history.best_estimator_
+        
+        import kerastuner as kt
+
+        tuner = kt.Hyperband(
+            create_multiple_model_arch,
+            objective='val_accuracy',
+            max_epochs=3,
+            hyperband_iterations=1)
+        nlp_data_train, nlp_data_test, meta_data_train, meta_data_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen, multiple=True)
+        
+        tuner.search((nlp_data_train,meta_data_train),
+                     y_train,
+                     epochs = params.epochs,
+                     validation_data = ((nlp_data_test,meta_data_test), y_test))
+        
+        # Get the optimal hyperparameters
+        best_hps = tuner.get_best_hyperparameters(num_trials = 1)[0]
+        
+        print(f"""The hyperparameter search is complete. 
+        The optimal number of units in the first densely-connected layer is {best_hps.get('units')}
+        and the optimal learning rate for the optimizer is {best_hps.get('learning_rate')}.""")
+        
+        return None, None
     
     elif model_arch == 'word_embedding':
         return None, None
