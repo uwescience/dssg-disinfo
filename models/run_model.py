@@ -6,6 +6,8 @@ import build_model
 from build_model import *
 import param_tune
 from param_tune import *
+from get_data import *
+from word_embedding_arch import *
 
 # Importing the default parameters
 import params_class
@@ -47,9 +49,7 @@ def run_model(model_arch='basic', **copacabana):
         history, fitted_model = fit_and_run_model(compiled_model, vocab_size=10000, maxlen=681, epochs=10, model_arch=model_arch)
     
     elif model_arch == 'word_embedding': # word embedding model, pulls in word_embedding file specified by user.
-        
-        embedding_path=input("Enter path of word embedding:") #connect the path: path/to/wordembeddingfile
-        history, fitted_model=fit_and_run_embedding_model(embedding_path=embedding_path, embedding_dim=300, maxlen=681, epochs=10, model_arch=model_arch)
+        history, fitted_model=param_tune(model_arch)
         
     else:
         print("Invalid model type entered entered!")

@@ -22,6 +22,9 @@ from keras.layers import Dense, Flatten, LSTM, Bidirectional, Conv1D, MaxPooling
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
+from word_embedding_arch import *
+from get_data import *
+
 
 import params_class
 params=params_class.params()
@@ -41,7 +44,7 @@ def param_tune(model_arch):
     param_grid = dict(bidir_num_filters=[32, 64, 128],
                       dense_1_filters=[10],
                       vocab_size=[10000],
-                      embedding_dim=[300],
+                      embedding_dim=[200],
                       maxlen=[681],
                       optimizer=['adam','nadam'])
     
@@ -65,6 +68,9 @@ def param_tune(model_arch):
                            validation_data=(X_test, y_test))
         
         test_accuracy = grid.score(X_test, y_test)
+        
+        print("Best model parameters are:")
+        print(grid_result.best_params_)
 
         return history, grid.best_estimator_
     
@@ -72,18 +78,27 @@ def param_tune(model_arch):
         return None, None
     
     elif model_arch == 'word_embedding':
-        return None, None
+        
+        model_new = KerasClassifier(build_fn = create_word_embd_model_arch) # updated this for embd
+
+        grid = RandomizedSearchCV(estimator=model_new, param_distributions=param_grid, 
+                            cv = StratifiedKFold(n_splits=5), verbose=1, n_iter=5, scoring='accuracy')
+        
+        #pull in data
+        X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen)
+
+        history = grid.fit(X_train, y_train,
+                           callbacks=[csv_logger],
+                           epochs=params.epochs,
+                           validation_data=(X_test, y_test))
+        
+        test_accuracy = grid.score(X_test, y_test)
+        
+        print("Best model parameters are:")
+        print(grid_result.best_params_)
+
+        return history, grid.best_estimator_
+
     
     else:
         return None, None
-
-'''# Evaluate testing set
-test_accuracy = grid.score(X_test, y_test)
-print(test_accuracy)
-
-print(grid_result.best_score_)
-print(grid_result.best_params_)
-print(grid_result.cv_results_)
-
-results= grid_result
-score=grid.score'''
