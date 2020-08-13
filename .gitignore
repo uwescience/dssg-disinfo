@@ -5,3 +5,4 @@ data/
 *.pyc
 *.ipynb
 !/notebooks/*.ipynb
+models/pretrained_embeddings/

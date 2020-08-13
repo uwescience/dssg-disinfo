@@ -1,4 +1,4 @@
-# Number of tokens
+# Lexical features
 
 import pandas as pd
 import re as re
@@ -21,6 +21,8 @@ def token_features(dataframe, article_id_var, input_text_var):
             -len_first_caps: number of words with the first letter Capitalized in each text cell
             -all_caps: list of all words with all letters CAPITALIZED in each text cell
             -len_all_caps: number of words with all letters CAPITALIZED in each text cell
+            -avg_len_characters: average character length of words in each text cell
+            
     """
     # Create new dataframe with "article_pk" idenitifier
     new_df = pd.DataFrame(dataframe[article_id_var])
@@ -45,4 +47,11 @@ def token_features(dataframe, article_id_var, input_text_var):
     new_df['all_caps'] = new_df.apply(lambda row: re.findall('([A-Z][A-Z]+)', str(row['tokenized'])), axis=1)
     new_df['len_all_caps'] = new_df['all_caps'].apply(lambda x: len(x))
     
+    # Find unique tokens and put in new column
+    new_df['unique_toks'] = new_df.apply(lambda row: set(row['tokenized']), axis=1)
+    new_df['len_unique'] = new_df['unique_toks'].apply(lambda x: len(x))
+    
+    # Average size of words (in characters)
+    new_df['avg_len_characters'] = new_df.apply(lambda row: sum([len(token) for token in row['tokenized']])/len(row['tokenized']), axis=1)
+
     return new_df
