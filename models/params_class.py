@@ -8,7 +8,7 @@ class params(object):
                  oov_token='<OOV>',
                  truncating='post',
                  embedding_dim=300,
-                 epochs=3,
+                 epochs=1,
                  optimizer='adam',
                  bidir_num_filters=64,
                  dense_1_filters=10,

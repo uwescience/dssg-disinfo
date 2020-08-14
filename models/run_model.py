@@ -36,12 +36,9 @@ def run_model(model_arch='basic', **copacabana):
     
     if model_arch == 'basic': # basic model- LSTM
         
-        ##### model= build_model(model_arch=model_arch, **copacabana)
-        ##### compiled_model= compile_model(model)
-        ##### hypertuned_compiled_model=param_tune(model_arch)
-        history, fitted_model=param_tune(model_arch)
-        ##### history, fitted_model= fit_and_run_model(hypertuned_compiled_model, **copacabana)
-    
+        file_name=param_tune(model_arch, **copacabana) #returns file name with epoch logs for the best model
+        plot_graphs(file_name)
+
     elif model_arch == 'multiple': # two input model- linguistic features and text input
         
         model=build_model(model_arch=model_arch, **copacabana)

@@ -25,9 +25,6 @@ def plot_graphs(history, string):
     
     '''
     
-    #history=collected model, string= 'accuracy' or whichever. 
-    #It will name the png output file as history+metric
-    
     plt.plot(history.history[string])
     plt.plot(history.history['val_'+string])
     plt.xlabel("Epochs")

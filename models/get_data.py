@@ -69,11 +69,17 @@ def get_data_and_split(vocab_size, maxlen, model_arch=None, multiple=False, scal
     else:     
     # Train-test split for single input model
     
-        sentences = df['article_text'].values
-   
-    
+        #sentences = df['article_text'].values
+        sentences = df[['article_pk', 'article_text']]
+        
         sentences_train, sentences_test, y_train, y_test = train_test_split(
             sentences, y, test_size=0.25, random_state = 42)
+        
+        file_name ='article_pk'
+        sentences_test['article_pk'].to_csv(file_name)
+        
+        sentences_train = sentences_train['article_text']
+        sentences_test = sentences_test['article_text']
     
     # scale 
     
@@ -90,8 +96,6 @@ def get_data_and_split(vocab_size, maxlen, model_arch=None, multiple=False, scal
     word_index = tokenizer.word_index
     X_train = tokenizer.texts_to_sequences(sentences_train)
     X_test = tokenizer.texts_to_sequences(sentences_test)
-
-        
 
     # Pad sequences with zeros
     X_train = pad_sequences(X_train, padding='post', maxlen=maxlen, truncating='post')
