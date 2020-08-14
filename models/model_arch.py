@@ -16,6 +16,8 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.layers.embeddings import Embedding
 from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras import layers
+from sklearn.metrics import roc_curve, auc
+import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Flatten, LSTM, Bidirectional, Conv1D, MaxPooling1D, Dropout, Activation
 from sklearn.model_selection import train_test_split

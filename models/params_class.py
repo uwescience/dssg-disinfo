@@ -27,8 +27,6 @@ class params(object):
         self.vocab_size = vocab_size
         self.maxlen= maxlen
    
-
-        
 '''def clean_rnn(params):
     """ ... """
     vocab_size = params.vocab_size

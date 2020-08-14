@@ -50,7 +50,7 @@ def create_basic_model_arch(bidir_num_filters=64, dense_1_filters=10, vocab_size
     
     model.compile(optimizer=optimizer,
                   loss='binary_crossentropy',
-                  metrics=['accuracy'])
+                  metrics=[tf.keras.metrics.AUC()])
     
     return model
 
