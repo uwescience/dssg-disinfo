@@ -28,29 +28,7 @@ import matplotlib.pyplot as plt
 env_path = '/data/dssg-disinfo/.env'
 load_dotenv(env_path, override=True)
 
-#----------------------------------
-
-#----------------------------------
-
-### Model Registry? 
-
 _model_arch_registry = {}
-
-'''def get_model_params(model_arch='basic'):
-    
-    
-      if(model_arch=='basic'):
-        # (This next line could be implemented by using def build_model(**params) instead)
-        params = {
-            'bidir_num_filters': bidir_num_filters,
-            'dense_1_filters': dense_1_filters,
-            'optimizer': optimizer,
-            'vocab_size': vocab_size,
-            'embedding_dim': embedding_dim,
-            'maxlen': maxlen,
-            'epochs': epochs,
-            'model_arch': 'basic'
-        }'''
 
 def register_model_arch(arch_name, create_fn, param_names):
     """

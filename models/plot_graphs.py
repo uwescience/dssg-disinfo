@@ -38,7 +38,6 @@ def plot_graphs(history, string):
     
     data = pd.read_csv(log_file, sep=';')
     
-    
     # plotting loss 
     loss = plt.figure(figsize=(15,8))
     plt.plot(data['epoch'], data[['val_loss','loss']])
