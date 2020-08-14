@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -7,6 +8,13 @@ import os
 
 
 def plot_graphs(log_file, model):
+=======
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+def plot_graphs(history, string):
+>>>>>>> 511efc3bca97b594df31ab06eb19d1bc5454bba5
     ''' Plots model output metrics such as 
     accuracy, etc. for a given model and
     saves a png file with the results. 
@@ -17,10 +25,17 @@ def plot_graphs(log_file, model):
 
     -----------
     obj
+<<<<<<< HEAD
         log_file  - csv log containing validation accuracy, 
         loss, etc. collected after an instance of a model has been fit 
     str
         model - model name (i.e. 'word_embedding', 'basic', 'multiple')
+=======
+        history object collected after an instance of 
+        a model has been fit 
+    str
+        string passed as the name of the model (i.e. accuracy, loss)
+>>>>>>> 511efc3bca97b594df31ab06eb19d1bc5454bba5
 
     Returns
     -------
@@ -28,6 +43,7 @@ def plot_graphs(log_file, model):
             
     
     '''
+<<<<<<< HEAD
     script_dir = os.path.dirname(__file__)
 
     results_dir = os.path.join(script_dir, 'Graphs/')
@@ -63,4 +79,17 @@ def plot_graphs(log_file, model):
        
     
     
+=======
+    
+    #history=collected model, string= 'accuracy' or whichever. 
+    #It will name the png output file as history+metric
+    
+    plt.plot(history.history[string])
+    plt.plot(history.history['val_'+string])
+    plt.xlabel("Epochs")
+    plt.ylabel(string)
+    plt.legend([string, 'val_'+string])
+    file_name= f'{history}'+ string + '.png'
+    plt.savefig(file_name)
+>>>>>>> 511efc3bca97b594df31ab06eb19d1bc5454bba5
     return
