@@ -19,7 +19,9 @@ from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras import (Input, Model, layers)
 from keras.models import Sequential
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
+import tensorflow as tf
 
 #Import Model Registry
 #import model_registry
@@ -106,7 +108,7 @@ def fit_and_run_embedding_model(bidir_num_filters=64, dense_1_filters=10, vocab_
         model.summary()
 
         ### VI. Put model together and run
-        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[tf.keras.metrics.AUC()])
 
         ### VII. Fitting and running the model
         num_epochs = epochs
@@ -123,7 +125,7 @@ def fit_and_run_embedding_model(bidir_num_filters=64, dense_1_filters=10, vocab_
 
 def compile_model(model, optimizer='adam',
                   loss='binary_crossentropy',
-                  metrics=['accuracy']):
+                  metrics=[tf.keras.metrics.AUC()]):
     """ compile model
     """
     # Print model layers

@@ -74,7 +74,8 @@ def create_word_embd_model_arch(embedding_dim=300, bidir_num_filters=64, dense_1
         keras.layers.Dense(1, activation='sigmoid')
         ])
         
-    model.compile(optimizer=optimizer,loss='binary_crossentropy', metrics=['accuracy'])
+        
+    model.compile(optimizer=optimizer,loss='binary_crossentropy', metrics=[tf.keras.metrics.AUC()])
     
     return model
 

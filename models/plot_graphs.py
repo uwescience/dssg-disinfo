@@ -1,6 +1,7 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
+import os
 
 def plot_graphs(history, string):
     ''' Plots model output metrics such as 
@@ -13,10 +14,12 @@ def plot_graphs(history, string):
 
     -----------
     obj
-        history object collected after an instance of 
-        a model has been fit 
+
+        log_file  - csv log containing validation accuracy, 
+        loss, etc. collected after an instance of a model has been fit 
     str
-        string passed as the name of the model (i.e. accuracy, loss)
+        model - model name (i.e. 'word_embedding', 'basic', 'multiple')
+
 
     Returns
     -------
@@ -24,12 +27,37 @@ def plot_graphs(history, string):
             
     
     '''
+
+    script_dir = os.path.dirname(__file__)
+
+    results_dir = os.path.join(script_dir, 'Graphs/')
     
-    plt.plot(history.history[string])
-    plt.plot(history.history['val_'+string])
+
+    if not os.path.isdir(results_dir):
+        os.makedirs(results_dir)
+    
+    data = pd.read_csv(log_file, sep=';')
+    
+    # plotting loss 
+    loss = plt.figure(figsize=(15,8))
+    plt.plot(data['epoch'], data[['val_loss','loss']])
+    plt.legend(data[['val_loss','loss']])
+    plt.title('Loss for Training and Validation' + ' - ' + model)
     plt.xlabel("Epochs")
-    plt.ylabel(string)
-    plt.legend([string, 'val_'+string])
-    file_name= f'{history}'+ string + '.png'
-    plt.savefig(file_name)
+    plt.ylabel("Loss") 
+    file_name_loss= model + '_'+ 'loss' + '.png'
+    plt.savefig(results_dir + file_name_loss)
+   
+
+    # plotting accuracy 
+    plt.figure(figsize=(15,8))
+    accuracy= plt.plot(data['epoch'], data[['val_accuracy','accuracy']])
+    plt.legend(data[['val_accuracy','accuracy']])
+    plt.title('Accuracy for Training and Validation' + ' - ' + model)
+    plt.xlabel("Epochs")
+    plt.ylabel("Accuracy")   
+    file_name_acc= model + '_'+ 'accuracy' + '.png'
+    plt.savefig(results_dir + file_name_acc)
+       
+
     return
