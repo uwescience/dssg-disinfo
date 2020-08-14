@@ -13,6 +13,7 @@ class params(object):
                  bidir_num_filters=64,
                  dense_1_filters=10,
                  embedding_path=None,
+                 dropout_rate=0.2,
                  vocab_size = 10000,
                  maxlen=681
                  ):
@@ -24,6 +25,7 @@ class params(object):
         self.bidir_num_filters=bidir_num_filters
         self.dense_1_filters=dense_1_filters
         self.embedding_path=embedding_path
+        self.dropout_rate=dropout_rate
         self.vocab_size = vocab_size
         self.maxlen= maxlen
    

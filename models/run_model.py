@@ -1,10 +1,6 @@
-import model_arch
 from model_arch import *
-import baseline_model
 from baseline_model import *
-import build_model
 from build_model import *
-import param_tune
 from param_tune import *
 from get_data import *
 from word_embedding_arch import *
@@ -37,7 +33,7 @@ def run_model(model_arch='basic', **copacabana):
     if model_arch == 'basic': # basic model- LSTM
         
         file_name=param_tune(model_arch, **copacabana) #returns file name with epoch logs for the best model
-        plot_graphs(file_name)
+        # plot_graphs(file_name) # Plug the correct plot graph here
 
     elif model_arch == 'multiple': # two input model- linguistic features and text input
         
@@ -46,11 +42,11 @@ def run_model(model_arch='basic', **copacabana):
         history, fitted_model = fit_and_run_model(compiled_model, vocab_size=10000, maxlen=681, epochs=10, model_arch=model_arch)
     
     elif model_arch == 'word_embedding': # word embedding model, pulls in word_embedding file specified by user.
-        history, fitted_model=param_tune(model_arch)
-        
+        file_name=param_tune(model_arch)
+        # plot_graphs(file_name) # Plug the plot thing here
     else:
         print("Invalid model type entered entered!")
-        history=None
-        fitted_model=None
     
-    return history, fitted_model
+    print("That's all folks!")
+    
+    return
