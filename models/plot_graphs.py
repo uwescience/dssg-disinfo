@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
+from datetime import datetime
 from matplotlib import pyplot as plt
 import os
 
-def plot_graphs(history, string):
+def plot_graphs(log_file, model_arch):
     ''' Plots model output metrics such as 
     accuracy, etc. for a given model and
     saves a png file with the results. 
@@ -18,7 +19,7 @@ def plot_graphs(history, string):
         log_file  - csv log containing validation accuracy, 
         loss, etc. collected after an instance of a model has been fit 
     str
-        model - model name (i.e. 'word_embedding', 'basic', 'multiple')
+        model_arch - model name (i.e. 'word_embedding', 'basic', 'multiple')
 
 
     Returns
@@ -26,13 +27,11 @@ def plot_graphs(history, string):
     none
             
     
-    '''
-
+    '''    
     script_dir = os.path.dirname(__file__)
 
     results_dir = os.path.join(script_dir, 'Graphs/')
     
-
     if not os.path.isdir(results_dir):
         os.makedirs(results_dir)
     
@@ -42,22 +41,21 @@ def plot_graphs(history, string):
     loss = plt.figure(figsize=(15,8))
     plt.plot(data['epoch'], data[['val_loss','loss']])
     plt.legend(data[['val_loss','loss']])
-    plt.title('Loss for Training and Validation' + ' - ' + model)
+    plt.title('Loss for Training and Validation' + ' - ' + model_arch)
     plt.xlabel("Epochs")
     plt.ylabel("Loss") 
-    file_name_loss= model + '_'+ 'loss' + '.png'
+    file_name_loss= model_arch + '_'+ 'loss_'+datetime.now().strftime('%Y%m%d%H%M%S')+'_.png'
     plt.savefig(results_dir + file_name_loss)
    
 
     # plotting accuracy 
     plt.figure(figsize=(15,8))
-    accuracy= plt.plot(data['epoch'], data[['val_accuracy','accuracy']])
-    plt.legend(data[['val_accuracy','accuracy']])
-    plt.title('Accuracy for Training and Validation' + ' - ' + model)
+    accuracy= plt.plot(data['epoch'], data[['val_auc_4','auc_4']])
+    plt.legend(['validation data','training data'])
+    plt.title('Area Under the Curve for Training and Validation Data' + ' - ' + model_arch)
     plt.xlabel("Epochs")
-    plt.ylabel("Accuracy")   
-    file_name_acc= model + '_'+ 'accuracy' + '.png'
+    plt.ylabel("AUC")   
+    file_name_acc= model_arch + '_'+ 'auc_'+datetime.now().strftime('%Y%m%d%H%M%S')+'_.png'
     plt.savefig(results_dir + file_name_acc)
        
-
     return

@@ -39,7 +39,10 @@ def param_tune(model_arch, **copacabana):
     ------
     
     '''
-        
+    
+    # Storing all the parameters into copacabana, parameters passed by user will overwrite default
+    copacabana = {k: copacabana.get(k, copacabana[k]) for k in copacabana.keys()}
+    
     #Parameter grid for grid search
     param_grid = dict(bidir_num_filters=[32, 64, 128],
                       dense_1_filters=[10],
@@ -60,10 +63,10 @@ def param_tune(model_arch, **copacabana):
         
         print("Loading data.")
         #pull in data
-        X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen) # get_data.py function
+        X_train, X_test, y_train, y_test = get_data_and_split(copacabana['vocab_size'], copacabana['maxlen']) # get_data.py function
 
         grid.fit(X_train, y_train,
-                 epochs=params.epochs,
+                 epochs=copacabana['epochs'],
                  validation_data=(X_test, y_test))
         
         print("Best model parameters are:")
@@ -73,7 +76,7 @@ def param_tune(model_arch, **copacabana):
         
         grid.best_estimator_.fit(X_train,
                                  y_train,
-                                 epochs=params.epochs,
+                                 epochs=copacabana['epochs'],
                                  validation_data=(X_test, y_test),
                                  callbacks=[csv_logger])
         
@@ -110,7 +113,7 @@ def param_tune(model_arch, **copacabana):
         X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen)
 
         grid.fit(X_train, y_train,
-                 epochs=params.epochs,
+                 epochs=copacabana['epochs'],
                  validation_data=(X_test, y_test))
                 
         print("Best model parameters are:")
@@ -120,7 +123,7 @@ def param_tune(model_arch, **copacabana):
         
         grid.best_estimator_.fit(X_train,
                                  y_train,
-                                 epochs=params.epochs,
+                                 epochs=copacabana['epochs'],
                                  validation_data=(X_test, y_test),
                                  callbacks=[csv_logger])
         
@@ -137,6 +140,5 @@ def param_tune(model_arch, **copacabana):
         ################
         
         return file_name #file_name of epoch log of best model
-
     else:
         return None

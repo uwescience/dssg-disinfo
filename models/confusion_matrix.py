@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import os
 
 
-def plot_confusion_maatrix(predicted_labels, model):
+def plot_confusion_maatrix(predicted_labels, model_arch):
     ''' Plots confusion matrix based on true vs.
     predicted labels and saves the plot as png in the
     Graph folder. 
@@ -30,7 +30,7 @@ def plot_confusion_maatrix(predicted_labels, model):
 
     
     script_dir = os.path.dirname(__file__)
-    esults_dir = os.path.join(script_dir, 'Graphs/')
+    results_dir = os.path.join(script_dir, 'Graphs/')
     
     data = pd.read_csv(predicted_labels)
     
@@ -38,7 +38,7 @@ def plot_confusion_maatrix(predicted_labels, model):
     cm_display = ConfusionMatrixDisplay(cm).plot()
     cm_display = ConfusionMatrixDisplay(cm).plot()
     plt.title('Confusion Matrix')
-    file_name = 'confusion_matrix'+'_'+ model + '.png'
+    file_name = 'confusion_matrix'+'_'+ model_arch + '.png'
     plt.savefig(results_dir + file_name)
 
     return 
