@@ -41,8 +41,12 @@ load_dotenv(env_path, override=True)
 def create_multiple_model_arch(bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, embedding_dim=300, maxlen=681, optimizer='adam'): #Could we replace with (?): "**copacabana"
     
     # define two different sets of inputs
-    nlp_input = Input(shape=(vocab_size,embedding_dim)) # Input layer for text
-    meta_input = Input(shape=(vocab_size,22)) # Input layer for 22 linguistic feature columns
+    nlp_input = Input(shape=(None)) # Input layer for text
+    meta_input = Input(shape=(,22)) # Input layer for 22 linguistic feature columns
+    
+    # define two different sets of inputs
+    ###nlp_input = Input(shape=(vocab_size,embedding_dim)) # Input layer for text
+    ###meta_input = Input(shape=(vocab_size,22)) # Input layer for 22 linguistic feature columns
     
     # BRANCH ONE: nlp_input layer
     x = Embedding(vocab_size, embedding_dim)(nlp_input)
@@ -52,6 +56,11 @@ def create_multiple_model_arch(bidir_num_filters=64, dense_1_filters=10, vocab_s
     # BRANCH TWO: meta_input layer
     y = Dense(2, activation="relu")(meta_input) #Maya added this layer
     y = Model(inputs=meta_input, outputs=y)
+    
+    
+    combi_input = Input((3,)) # (None, 3)
+    a_input = Lambda(lambda x: tf.expand_dims(x[:,0],-1))(combi_input) # (None, 1) 
+    b_input = Lambda(lambda x: tf.expand_dims(x[:,1],-1))(combi_input) # (None, 1)
     
     # combine the output of the two branches
     combined_output = Concatenate(axis=1)([x.output, y.output])
