@@ -21,8 +21,7 @@ def run_model(model_arch='basic', **copacabana):
     
     output
     ------
-    history: model history, includes train and validation accuracy, train and validation loss
-    fitted_model: final model
+    file_name: 
     """
     
     # Calling the default parameters
@@ -39,14 +38,18 @@ def run_model(model_arch='basic', **copacabana):
         
         model=build_model(model_arch=model_arch, **copacabana)
         compiled_model=compile_model(model)
-        history, fitted_model = fit_and_run_model(compiled_model, vocab_size=10000, maxlen=681, epochs=10, model_arch=model_arch)
+        history, fitted_model = fit_and_run_model(compiled_model,
+                                                  vocab_size=10000,
+                                                  maxlen=681, epochs=10,
+                                                  model_arch=model_arch)
     
     elif model_arch == 'word_embedding': # word embedding model, pulls in word_embedding file specified by user.
         file_name=param_tune(model_arch)
         # plot_graphs(file_name) # Plug the plot thing here
     else:
         print("Invalid model type entered entered!")
+        file_name= None
     
     print("That's all folks!")
     
-    return
+    return file_name

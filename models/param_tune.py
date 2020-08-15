@@ -37,7 +37,7 @@ def param_tune(model_arch, **copacabana):
     
     output
     ------
-    
+    file_name: string, log file for best model fit
     '''
     
     # Storing all the parameters into copacabana, parameters passed by user will overwrite default
@@ -47,9 +47,9 @@ def param_tune(model_arch, **copacabana):
     param_grid = dict(bidir_num_filters=[32, 64, 128],
                       dense_1_filters=[10],
                       vocab_size=[10000],
-                      embedding_dim=[300],
+                      embedding_dim=[100, 200, 300],
                       maxlen=[681],
-                      dropout_rate=[0.2],
+                      dropout_rate=[0.2, 0.3, 0.4, 0.5],
                       optimizer=['adam', 'nadam'])
     
     # File to save the model logs
@@ -57,13 +57,18 @@ def param_tune(model_arch, **copacabana):
     csv_logger = CSVLogger(file_name, append=True, separator=';')
     
     if model_arch == 'basic':
-        
         model_new = KerasClassifier(build_fn = create_basic_model_arch) # baseline_model.py function
-        grid = RandomizedSearchCV(estimator=model_new, param_distributions=param_grid, cv = StratifiedKFold(n_splits=2), verbose=0, n_iter=1, scoring='accuracy')
+        grid = RandomizedSearchCV(estimator=model_new,
+                                  param_distributions=param_grid,
+                                  cv = StratifiedKFold(n_splits=5),
+                                  verbose=0,
+                                  n_iter=10,
+                                  scoring='accuracy')
         
         print("Loading data.")
         #pull in data
-        X_train, X_test, y_train, y_test = get_data_and_split(copacabana['vocab_size'], copacabana['maxlen']) # get_data.py function
+        X_train, X_test, y_train, y_test = get_data_and_split(copacabana['vocab_size'],
+                                                              copacabana['maxlen']) # get_data.py function
 
         grid.fit(X_train, y_train,
                  epochs=copacabana['epochs'],
@@ -90,13 +95,13 @@ def param_tune(model_arch, **copacabana):
         df2=pd.DataFrame(pred)
         df_new=pd.concat([df1, df2],keys=['label','predicted_label'], axis=1)
         df_new.to_csv(predictions_file_name, sep=',',index=False )
-        ################
+        ################ -----------------------------------------------------------
         
-        return file_name #file_name of epoch log of best model
+        return file_name
     
     elif model_arch == 'multiple':
-        return None, None
-    
+        return None
+        
     elif model_arch == 'word_embedding':
         
         model_new = KerasClassifier(build_fn = create_word_embd_model_arch) # updated this for embd
@@ -110,7 +115,8 @@ def param_tune(model_arch, **copacabana):
         
         print("Loading data.")
         #pull in data
-        X_train, X_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen)
+        X_train, X_test, y_train, y_test = get_data_and_split(copacabana['vocab_size'],
+                                                              copacabana['maxlen'])
 
         grid.fit(X_train, y_train,
                  epochs=copacabana['epochs'],
@@ -138,7 +144,7 @@ def param_tune(model_arch, **copacabana):
         df_new=pd.concat([df1, df2],keys=['label','predicted_label'], axis=1)
         df_new.to_csv(predictions_file_name, sep=',',index=False )
         ################
-        
-        return file_name #file_name of epoch log of best model
+        return file_name
+    
     else:
         return None
