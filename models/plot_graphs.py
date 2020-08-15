@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 from matplotlib import pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import os
 
 def plot_graphs(log_file, model_arch):
@@ -38,24 +39,26 @@ def plot_graphs(log_file, model_arch):
     data = pd.read_csv(log_file, sep=';')
     
     # plotting loss 
-    loss = plt.figure(figsize=(15,8))
-    plt.plot(data['epoch'], data[['val_loss','loss']])
+    ax = plt.figure(figsize=(15,8)).gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.plot(data['epoch'], data.iloc[:,[2,4]])#data[['val_loss','loss']])
     plt.legend(data[['val_loss','loss']])
     plt.title('Loss for Training and Validation' + ' - ' + model_arch)
     plt.xlabel("Epochs")
     plt.ylabel("Loss") 
-    file_name_loss= model_arch + '_'+ 'loss_'+datetime.now().strftime('%Y%m%d%H%M%S')+'_.png'
+    file_name_loss= model_arch + '_'+ 'loss_'+datetime.now().strftime('%Y%m%d%H%M%S')+'.png'
     plt.savefig(results_dir + file_name_loss)
    
 
     # plotting accuracy 
-    plt.figure(figsize=(15,8))
-    accuracy= plt.plot(data['epoch'], data[['val_auc_4','auc_4']])
+    ax = plt.figure(figsize=(15,8)).gca()
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+    accuracy= plt.plot(data['epoch'], data.iloc[:,[1,3]])
     plt.legend(['validation data','training data'])
     plt.title('Area Under the Curve for Training and Validation Data' + ' - ' + model_arch)
     plt.xlabel("Epochs")
     plt.ylabel("AUC")   
-    file_name_acc= model_arch + '_'+ 'auc_'+datetime.now().strftime('%Y%m%d%H%M%S')+'_.png'
+    file_name_acc= model_arch + '_'+ 'auc_'+datetime.now().strftime('%Y%m%d%H%M%S')+'.png'
     plt.savefig(results_dir + file_name_acc)
        
     return
