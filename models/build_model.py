@@ -29,6 +29,9 @@ from model_arch import *
 import get_data
 from get_data import *
 
+import params_class
+params=params_class.params()
+
 ### II. Import data
 # Path to the environment variables file .env
 env_path = '/data/dssg-disinfo/.env'
@@ -39,7 +42,12 @@ load_dotenv(env_path, override=True)
 
 
 def build_model(model_arch=None, **copacabana):
+    
     """Builds a model using the passed parameters."""
+    
+    #default_params = {value:items for value, items in params.__dict__.items()}
+    copacabana = {k: copacabana.get(k, copacabana[k]) for k in copacabana.keys()}
+    
     # Set default parameters
     if (model_arch=='None' or model_arch=='basic'):
         model = build_model_arch(model_arch, copacabana) #],#copacabana is a dictionary so don't need **
@@ -71,13 +79,14 @@ def build_model(model_arch=None, **copacabana):
     # ...etc...
         
     elif model_arch == 'multiple':
-        nlp_input=Input(shape=[None]) # Input layer for text
-        meta_input=Input(shape=(22,)) # Input layer for 22 linguistic feature columns
-        nlp_embeddings=Embedding(vocab_size, embedding_dim)(nlp_input)
-        nlp_LSTM=LSTM(bidir_num_filters)(nlp_embeddings) # text embeddings LSTM
-        x = Concatenate()([nlp_LSTM, meta_input]) # Merge text LSTM with linguistic features
-        x = Dense(1, activation='sigmoid')(x) # Output layer
-        model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
+        #nlp_input=Input(shape=[None]) # Input layer for text
+        #meta_input=Input(shape=(22,)) # Input layer for 22 linguistic feature columns
+        #nlp_embeddings=Embedding(params.vocab_size, params.embedding_dim)(nlp_input)
+        #nlp_LSTM=LSTM(params.bidir_num_filters)(nlp_embeddings) # text embeddings LSTM
+        #x = Concatenate()([nlp_LSTM, meta_input]) # Merge text LSTM with linguistic features
+        #x = Dense(1, activation='sigmoid')(x) # Output layer
+        #model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
+        model = build_model_arch(model_arch, **copacabana) 
         
     else:
         print("Wrong model architecture!")
@@ -157,28 +166,33 @@ def compile_model(model, optimizer='adam',
     return model
 
                      
-def fit_and_run_model(model, vocab_size=10000, embedding_dim=300, maxlen=681, epochs=5, model_arch='basic'):
+def fit_and_run_model(model, model_arch='basic', **copacabana):
     
-    file_name = datetime.now().strftime('%Y%m%d%H%M%S') +'_'+model_arch+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(maxlen)+'_'+str(epochs)+'.log'
+    default_params = {value:items for value, items in params.__dict__.items()}
+    copacabana = {k: copacabana.get(k, default_params[k]) for k in default_params.keys()}
+    
+    file_name = datetime.now().strftime('%Y%m%d%H%M%S')+'_'+model_arch+'_'+str(copacabana['optimizer'])+'_'+str(copacabana['bidir_num_filters'])+'_'+str(copacabana['epochs'])+'_'+str(copacabana['dropout_rate'])+'.log'
     csv_logger = CSVLogger(file_name, append=True, separator=';')
+    
+    # optimizer, bidir_num_filters, epochs, dropout_rate
     
     if model_arch == 'basic':
         
         ## Fetching data and splitting/tokenizing/padding
-        (X_train, X_test, y_train, y_test) = get_data_and_split(vocab_size, maxlen)
+        (X_train, X_test, y_train, y_test) = get_data_and_split(params.vocab_size, params.maxlen)
         
         history = model.fit(X_train, y_train,
-                            epochs=epochs,
+                            epochs = epochs,
                             validation_data=(X_test, y_test),
                             callbacks=[csv_logger])
         
     elif model_arch == 'multiple':
         
-        nlp_data_train, nlp_data_test, meta_data_train, meta_data_test, y_train, y_test = get_data_and_split(vocab_size, maxlen, multiple=True)
-        history = model.fit([[nlp_data_train, meta_data_train]], y_train, 
-                            epochs =epochs,
-                            validation_data = (nlp_data_test, meta_data_test, y_test),
-                           callbacks=[csv_logger])
+        nlp_data_train, nlp_data_test, meta_data_train, meta_data_test, y_train, y_test = get_data_and_split(params.vocab_size, params.maxlen, multiple=True)
+        history = model.fit([nlp_data_train, meta_data_train], y_train, 
+                            epochs = copacabana['epochs'],
+                            validation_data = ([nlp_data_test, meta_data_test], y_test),
+                            callbacks=[csv_logger])
     else:
         
         print("Wrong model architecture!")

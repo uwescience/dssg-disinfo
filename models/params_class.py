@@ -5,8 +5,6 @@ class params(object):
     """
     # define the default parameters live in the init argument list:
     def __init__(self,
-                 oov_token='<OOV>',
-                 truncating='post',
                  embedding_dim=300,
                  epochs=5,
                  optimizer='adam',
@@ -14,10 +12,9 @@ class params(object):
                  dense_1_filters=10,
                  embedding_path=None,
                  vocab_size = 10000,
-                 maxlen=681
+                 maxlen=681,
+                 dropout_rate = 0.2
                  ):
-        self.oov_token = oov_token
-        self.truncating = truncating
         self.embedding_dim = embedding_dim
         self.epochs = epochs
         self.optimizer = optimizer
@@ -26,6 +23,7 @@ class params(object):
         self.embedding_path=embedding_path
         self.vocab_size = vocab_size
         self.maxlen= maxlen
+        self.dropout_rate= dropout_rate
    
 
         
