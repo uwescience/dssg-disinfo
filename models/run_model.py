@@ -44,7 +44,7 @@ def run_model(model_arch='basic', **copacabana):
                                                   model_arch=model_arch)
     
     elif model_arch == 'word_embedding': # word embedding model, pulls in word_embedding file specified by user.
-        file_name=param_tune(model_arch)
+        file_name=param_tune(model_arch, **copacabana)
         # plot_graphs(file_name) # Plug the plot thing here
     else:
         print("Invalid model type entered entered!")
