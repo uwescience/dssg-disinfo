@@ -1,8 +1,15 @@
 class params(object):
-    """
-    The RnnParams tracks the parameters for the clean_retinotopy
-    function.
-    """
+    '''
+    The params class object tracks the parameters for the entire modeling 
+    process and all the corresponding functions.
+    
+    Inputs:
+    none
+    
+    Returns:
+    none
+    '''
+    
     # define the default parameters live in the init argument list:
     def __init__(self,
                  oov_token='<OOV>',
