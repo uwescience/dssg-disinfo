@@ -11,14 +11,16 @@ env_path = '/data/dssg-disinfo/.env'
 load_dotenv(env_path, override=True)
 
 def replace_char(DATA, CHAR, COLUMN=None):
-    """
-    Replace various whitespace characters with single space
+    """ Replace various whitespace characters with single space
     
-    input:
+    Parameters
+    ----------
+    DATA: dataframe
     CHAR: charcter that needs to be replaced
     COLUMN: column from which the character has to be replaced
     
-    output:
+    Returns
+    -------
     None
     """
     if COLUMN is None:
@@ -31,13 +33,15 @@ def replace_char(DATA, CHAR, COLUMN=None):
 
 
 def remove_non_ascii(DATA, COLUMN=None):
-    """
-    Remove all non-ASCII characters
+    """ Remove all non-ASCII characters
     
-    input:
+    Parameters
+    ----------
+    DATA: dataframe
     COLUMN: column from which non-ASCII charcters will be removed
     
-    output:
+    Return
+    ------
     None
     """
     if COLUMN is None:
@@ -50,48 +54,46 @@ def remove_non_ascii(DATA, COLUMN=None):
 
 def find_url(text):
     '''
-    input:
-    text
+    Parameter
+    ---------
+    text: the text in which URL needs to be found
     
-    output:
-    list: All URLS embedded in the input text 
+    Return
+    ------
+    list: All URLS embedded in the input text
     '''
     urls = (re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text))
+    
     return urls
-
-def url_list():
-    '''
-    Identifies urls in each article text and creates a new column with 
-    the list of identified urls as well as 
-    '''
     
-    df['urls'] = [find_url(cell) for cell in df['article_text']]
-    return 
-    
-def load_cleandata():
-    """
-    Concatanates negative and positive articles
+def load_cleandata(DATA=None):
+    """ Concatenates negative and positive articles
     Drops empty article_text rows
-    Removes duplicated article_text
+    Removes duplicate article_text
     Remove non-english article_text from the dataframe
     Remove noisy characters from article_text, article_headline
     Converting all characters in article_text, article_headline to ascii- removes emoticons
-    Export clean data in PATH location
+    Exports clean data in CLEAN_DATA named dataframe in DATA_PATH location
     
-    input:
-    dataframe- should have article_text, article_headline columns
+    Parameters
+    ----------
+    DATA: dataframe, which needs to be cleaned
     
-    output:
+    Returns
+    -------
     None
     """
-    PATH = os.getenv("PATH")
-    NEGATIVE_DATA = os.getenv("NEGATIVE_DATA")
-    POSITIVE_DATA = os.getenv("POSITIVE_DATA")
-    CLEAN_DATA = os.getenv("CLEAN_DATA")
+    DATA_PATH = os.getenv("DATA_PATH") # Path to the dataframe DATA
+    CLEAN_DATA = os.getenv("CLEAN_DATA") # Path where clean dataframe will be written
     
-    df_neg = pd.read_csv(os.path.join(PATH,NEGATIVE_DATA)) # Load negative data
-    df_pos = pd.read_csv(os.path.join(PATH,POSITIVE_DATA)) # Load positive data
-    df = pd.concat([df_pos, df_neg], ignore_index=True) # Concatanate negative and positive articles
+    if DATA is None:
+        NEGATIVE_DATA = os.getenv("NEGATIVE_DATA")
+        POSITIVE_DATA = os.getenv("POSITIVE_DATA")
+        df_neg = pd.read_csv(os.path.join(DATA_PATH,NEGATIVE_DATA)) # Load negative data
+        df_pos = pd.read_csv(os.path.join(DATA_PATH,POSITIVE_DATA)) # Load positive data
+        df = pd.concat([df_pos, df_neg], ignore_index=True) # Concatanate negative and positive articles
+    else:
+        df = DATA
     
     print("Removing empty rows from articles")
     # Drop empty article_text rows
@@ -135,6 +137,6 @@ def load_cleandata():
     
     print("Exporting clean data")
     # Export clean data
-    df.to_csv(os.path.join(PATH, CLEAN_DATA), index=False)
+    df.to_csv(os.path.join(DATA_PATH, CLEAN_DATA), index=False)
 
     return
