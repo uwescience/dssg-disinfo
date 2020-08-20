@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib
 from matplotlib import pyplot as plt
 import os
+import seaborn as sns
 
 
 def plot_confusion_maatrix(predicted_labels, model_arch):
@@ -33,11 +34,11 @@ def plot_confusion_maatrix(predicted_labels, model_arch):
     results_dir = os.path.join(script_dir, 'Graphs/')
     
     data = pd.read_csv(predicted_labels)
-    
-    cm = confusion_matrix(data['label'], data['predicted_label'])
-    cm_display = ConfusionMatrixDisplay(cm).plot()
-    cm_display = ConfusionMatrixDisplay(cm).plot()
-    plt.title('Confusion Matrix')
+    cm = confusion_matrix(data['label'], data['predicted_label'], normalize='true')
+    sns.set()
+    ax = sns.heatmap(cm, annot=True, fmt='.1%', cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["lightcyan","yellow","teal"]))
+    ax.set_title("Confusion Matrix - " + model_arch)
+    ax.set(xlabel='Predicted Label', ylabel='True Label')
     file_name = 'confusion_matrix'+'_'+ model_arch + '.png'
     plt.savefig(results_dir + file_name)
 
