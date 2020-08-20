@@ -7,7 +7,7 @@ import os
 import seaborn as sns
 
 
-def plot_confusion_maatrix(predicted_labels, model_arch):
+def plot_confusion_matrix(predicted_labels, model_arch):
     ''' Plots confusion matrix based on true vs.
     predicted labels and saves the plot as png in the
     Graph folder. 
