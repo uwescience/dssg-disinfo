@@ -7,19 +7,22 @@ import os
 
 # Path to the environment variables file .env
 env_path = '/data/dssg-disinfo/.env'
+load_dotenv(env_path, override=True) # Load environment variables
 
 def pre_trained_glove_word_embedding(DATA=None, COLUMN=None):
-    """
-    input:
-    DATA: dataframe
-    COLUMN: column to be vectorised
+    """ Pretrained glove vectorisation of input column using SpaCy
     
-    output:
-    Returns numpy array of the glove vectors of the column. 
+    Parameters
+    ----------
+        DATA: dataframe
+        COLUMN: column to be vectorised
+    
+    Returns
+    -------
+        df_vector: numpy array of the glove vectors of the column
     """
     
-    load_dotenv(env_path, override=True) # Load environment variables
-    PATH = os.getenv("PATH") # Path to the dataframe DATA
+    DATA_PATH = os.getenv("DATA_PATH") # Path to the dataframe DATA
     if DATA is None:
         DATA_NAME = os.getenv("CLEAN_DATA")
     else:
@@ -30,7 +33,7 @@ def pre_trained_glove_word_embedding(DATA=None, COLUMN=None):
     else:
         COLUMN_NAME = COLUMN
         
-    df = pd.read_csv(os.path.join(PATH,DATA_NAME)) # Load DATA_NAME from PATH
+    df = pd.read_csv(os.path.join(DATA_PATH,DATA_NAME)) # Load DATA_NAME from PATH
     
     nlp = spacy.load('en_vectors_web_lg') # Load the english vectors from spacy
     
