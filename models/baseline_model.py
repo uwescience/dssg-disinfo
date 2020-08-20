@@ -9,6 +9,26 @@ from keras.layers import Dense, Flatten, LSTM, Bidirectional, Dropout
 
 
 def create_basic_model_arch(bidir_num_filters=64, dense_1_filters=10, vocab_size=10000, embedding_dim=300, maxlen=681, dropout_rate=0.2, optimizer='adam'):
+    ''' Creates a basic model architecture to be used for the baseline 
+    model. 
+    Parameters
+    -----------
+    int
+        bidir_num_filters - number of bidirectional filters to be used, default is 64
+        dense_1_filters - number of dense filters, with default equal to 10
+        vocab_size - the size of vocabulary, default of 10000
+        embedding_dim - number of word embedding dimensions - 200 or 300
+        maxlen - maximum length of the text sample 
+        dropout_rate - drop out rate value 
+       
+    str
+        optimizer - optimizer to be used
+    Returns
+    -------
+    obj
+        returns model object that can then be fit and run
+            
+    '''
     
     model = Sequential()
     
