@@ -25,7 +25,8 @@ def create_basic_model_arch(bidir_num_filters=64, dense_1_filters=10, vocab_size
         optimizer - optimizer to be used
     Returns
     -------
-    none
+    obj
+        returns model object that can then be fit and run
             
     '''
     
