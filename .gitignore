@@ -6,3 +6,4 @@ data/
 *.ipynb
 !/notebooks/*.ipynb
 models/pretrained_embeddings/
+__pycache__
