@@ -65,9 +65,31 @@ def find_url(text):
     urls = (re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text))
     
     return urls
+
+
+def load_GDIdata():
+    ''' This function will load the two data sets (negative and positive) and concatenate them to produce
+    a single data frame.
     
-def load_cleandata(DATA=None):
-    """ Concatenates negative and positive articles
+    Parameters
+    ----------
+    None
+    
+    Returns
+    -------
+    df: dataframe, concatenated dataframe
+    '''
+    DATA_PATH = os.getenv("DATA_PATH") # Path to the dataframe DATA
+    NEGATIVE_DATA = os.getenv("NEGATIVE_DATA")
+    POSITIVE_DATA = os.getenv("POSITIVE_DATA")
+    df_neg = pd.read_csv(os.path.join(DATA_PATH,NEGATIVE_DATA)) # Load negative data
+    df_pos = pd.read_csv(os.path.join(DATA_PATH,POSITIVE_DATA)) # Load positive data
+    df = pd.concat([df_pos, df_neg], ignore_index=True) # Concatanate negative and positive articles
+    return df
+
+
+def clean_data(DATA=None):
+    """ Cleans the DATA and performs the following steps:
     Drops empty article_text rows
     Removes duplicate article_text
     Remove non-english article_text from the dataframe
@@ -85,13 +107,8 @@ def load_cleandata(DATA=None):
     """
     DATA_PATH = os.getenv("DATA_PATH") # Path to the dataframe DATA
     CLEAN_DATA = os.getenv("CLEAN_DATA") # Path where clean dataframe will be written
-    
     if DATA is None:
-        NEGATIVE_DATA = os.getenv("NEGATIVE_DATA")
-        POSITIVE_DATA = os.getenv("POSITIVE_DATA")
-        df_neg = pd.read_csv(os.path.join(DATA_PATH,NEGATIVE_DATA)) # Load negative data
-        df_pos = pd.read_csv(os.path.join(DATA_PATH,POSITIVE_DATA)) # Load positive data
-        df = pd.concat([df_pos, df_neg], ignore_index=True) # Concatanate negative and positive articles
+        df=load_GDIdata()
     else:
         df = DATA
     
