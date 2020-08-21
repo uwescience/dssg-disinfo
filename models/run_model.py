@@ -1,5 +1,6 @@
 from model_arch import *
 from baseline_model import *
+from multiple_model import *
 from build_model import *
 from param_tune import *
 from get_data import *
