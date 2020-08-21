@@ -11,7 +11,7 @@ Developing a method to identify disinformation sites could mitigate these harmfu
 
 See [project web page](https://uwescience.github.io/DSSG2020-Disinformation/).
 
-## For a demonstration of the app, visit [ADUniverse Web App Demonstration](https://youtu.be/nAPOM0hTsNU)
+## For access to a sample of the dataset, please contact: XXX?  [ADUniverse Web App Demonstration](https://youtu.be/nAPOM0hTsNU)
 
 
 By using the dataset (adunits.db) from this repository, you agree to the City of Seattle's [Terms of Use and Policy](https://data.seattle.gov/stories/s/Data-Policy/6ukr-wvup/), as well as to the [King County Assessors'](https://info.kingcounty.gov/assessor/DataDownload/default.aspx), the US Census Bureau's and Zillow's, from whom this data was acquired. 
@@ -25,6 +25,9 @@ By using the dataset (adunits.db) from this repository, you agree to the City of
 1. First, clone the  repository repository.
    - ``git clone https://github.com/uwescience/dssg-disinfo.git``
    - ``cd ADUniverse`` # change
+
+2. Next, download the following packages:
+   - NLTK, Pandas, SciPy, SpaCy,  Keras, TensorFlow, numpy, matplotlib and sklearn
 
 1. You will be working in a "virtual environment".
    - ``conda create -n test_adu python=3.6``
