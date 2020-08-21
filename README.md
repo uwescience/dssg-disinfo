@@ -22,9 +22,9 @@ By using the dataset (adunits.db) from this repository, you agree to the City of
    - [miniconda for python 3](https://docs.conda.io/en/latest/miniconda.html)
    - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 
-1. First, clone ADU repository repository.
-   - ``git clone https://github.com/uwescience/ADUniverse``
-   - ``cd ADUniverse``
+1. First, clone the  repository repository.
+   - ``git clone https://github.com/uwescience/dssg-disinfo.git``
+   - ``cd ADUniverse`` # change
 
 1. You will be working in a "virtual environment".
    - ``conda create -n test_adu python=3.6``
