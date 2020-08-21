@@ -36,12 +36,10 @@ def run_model(model_arch='basic', **copacabana):
 
     elif model_arch == 'multiple': # two input model- linguistic features and text input
         
-        model=build_model(model_arch=model_arch, **copacabana)
-        compiled_model=compile_model(model)
-        history, fitted_model = fit_and_run_model(compiled_model,
-                                                  vocab_size=10000,
-                                                  maxlen=681, epochs=10,
-                                                  model_arch=model_arch)
+        #model=build_model(model_arch=model_arch, **copacabana)
+        #compiled_model=compile_model(model)
+        file_name = fit_and_run_model(create_multiple_model_arch(**copacabana), model_arch= model_arch, 
+                                      **copacabana)
     
     elif model_arch == 'word_embedding': # word embedding model, pulls in word_embedding file specified by user.
         file_name=param_tune(model_arch, **copacabana)
