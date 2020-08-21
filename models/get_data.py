@@ -101,5 +101,3 @@ def get_data_and_split(vocab_size, maxlen, multiple=False, scaler=False):
         return X_train, X_test, meta_data_train, meta_data_test, y_train, y_test
     else:
          return X_train, X_test, y_train, y_test
-
-

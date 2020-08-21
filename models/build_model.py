@@ -193,11 +193,19 @@ def fit_and_run_model(model, model_arch='basic', **copacabana):
                             epochs = copacabana['epochs'],
                             validation_data = ([nlp_data_test, meta_data_test], y_test),
                             callbacks=[csv_logger])
+        ### the following code saves the predictions into a file for future analysis
+        predictions_file_name = datetime.now().strftime('%Y%m%d%H%M%S')+'_'+model_arch+'.predict'
+        
+        df1=pd.DataFrame(y_test)
+        pred=model.predict([nlp_data_test, meta_data_test])
+        df2=pd.DataFrame(pred)
+        df_new=pd.concat([df1, df2],keys=['label','predicted_label'], axis=1)
+        df_new.to_csv(predictions_file_name, sep=',',index=False)
     else:
         
         print("Wrong model architecture!")
         
-    return history, model
+    return file_name
 
 def create_embedding_matrix(filepath, word_index, embedding_dim):
     vocab_size = len(word_index) + 1  # Adding again 1 because of reserved 0 index
