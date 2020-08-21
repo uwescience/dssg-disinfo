@@ -3,7 +3,7 @@ DSSG 2020 Online disinformation classification project
 
 ![](https://travis-ci.org/uwescience/ADUniverse.svg?branch=master)
 
-# Identifying disinformation new articles online using deeping learning models
+# Using deeping learning to identify disinformation new articles online
 
 Websites that disseminate disinformation about coronavirus likely contribute to public harm by sowing confusion and distrust as well as preventing people from taking appropariate prevention measures or engagin gin dangerous fake treatment and cures, which could result in increased virus transmission, morbidity, and mortality worldwide.
 
