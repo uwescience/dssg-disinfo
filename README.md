@@ -1,9 +1,7 @@
 # dssg-disinfo
 DSSG 2020 Online disinformation classification project
 
-![](https://travis-ci.org/uwescience/ADUniverse.svg?branch=master)
-
-# Using deeping learning to identify disinformation new articles online
+# Using deep learning to identify disinformation new articles online
 
 Websites that disseminate disinformation about coronavirus likely contribute to public harm by sowing confusion and distrust as well as preventing people from taking appropariate prevention measures or engagin gin dangerous fake treatment and cures, which could result in increased virus transmission, morbidity, and mortality worldwide.
 
@@ -12,7 +10,6 @@ Developing a method to identify disinformation sites could mitigate these harmfu
 See [project web page](https://uwescience.github.io/DSSG2020-Disinformation/).
 
 ## For access to a sample of the dataset, please contact: XXX?  [ADUniverse Web App Demonstration](https://youtu.be/nAPOM0hTsNU)
-
 
 By using the dataset (adunits.db) from this repository, you agree to the City of Seattle's [Terms of Use and Policy](https://data.seattle.gov/stories/s/Data-Policy/6ukr-wvup/), as well as to the [King County Assessors'](https://info.kingcounty.gov/assessor/DataDownload/default.aspx), the US Census Bureau's and Zillow's, from whom this data was acquired. 
 
