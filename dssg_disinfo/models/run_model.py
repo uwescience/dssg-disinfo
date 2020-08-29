@@ -1,13 +1,13 @@
-from models.model_arch import *
-from models.baseline_model import *
-from models.build_model import *
-from models.param_tune import *
-from models.get_data import *
-from models.word_embedding_arch import *
+from .model_arch import *
+from .baseline_model import *
+from .build_model import *
+from .param_tune import *
+from .get_data import *
+from .word_embedding_arch import *
 
 # Importing the default parameters
-import models.params_class
-params=models.params_class.params()
+from . import params_class
+params= params_class.params()
 
 def run_model(model_arch='basic', **copacabana):
     """Run a model type specified by the model_arch.

@@ -1,5 +1,5 @@
-from models.model_arch import *
-from models.get_data import *
+from .model_arch import *
+from .get_data import *
 
 def create_embedding_matrix(filepath, word_index, embedding_dim):
     """ creates embedding matrix from pretrained vectors

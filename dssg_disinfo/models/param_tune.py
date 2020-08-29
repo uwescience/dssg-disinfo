@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import io
 import os
-from dotenv import load_dotenv
 from pathlib import Path  # Python 3.6+ only
 from datetime import datetime
 from tensorflow import keras
@@ -22,11 +21,11 @@ from keras.layers import (Dense,
                           Bidirectional,
                           Dropout)
 import matplotlib.pyplot as plt
-from models.word_embedding_arch import *
-from models.get_data import *
-import models.params_class
-params=models.params_class.params()
-from models.baseline_model import create_basic_model_arch
+from .word_embedding_arch import *
+from .get_data import *
+from . import params_class
+params=params_class.params()
+from .baseline_model import create_basic_model_arch
 
 def param_tune(model_arch, **copacabana):
     '''Runs parameter tuning.
@@ -60,7 +59,7 @@ def param_tune(model_arch, **copacabana):
         model_new = KerasClassifier(build_fn = create_basic_model_arch) # baseline_model.py function
         grid = RandomizedSearchCV(estimator=model_new,
                                   param_distributions=param_grid,
-                                  cv = StratifiedKFold(n_splits=5),
+                                  cv = StratifiedKFold(n_splits=2),
                                   verbose=0,
                                   n_iter=10,
                                   scoring='accuracy')

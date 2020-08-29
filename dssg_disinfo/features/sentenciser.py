@@ -1,8 +1,6 @@
 import spacy
 from spacy.lang.en import English
 
-
-
 def get_sent(doc):
     '''
     Extracts sentences demarcated by ( '.', '!', and '?') for each 

@@ -5,10 +5,6 @@ import numpy as np
 import spacy
 import os
 
-# Path to the environment variables file .env
-env_path = '/data/dssg-disinfo/.env'
-load_dotenv(env_path, override=True) # Load environment variables
-
 def pre_trained_glove_word_embedding(DATA=None, COLUMN=None):
     """ Pretrained glove vectorisation of input column using SpaCy
     
