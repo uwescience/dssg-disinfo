@@ -1,8 +1,4 @@
-#--------------------------------
-#       Model architecture file
-#--------------------------------
-
-### I. Importing necessary packages
+# Importing necessary packages
 import numpy as np
 import pandas as pd
 import io
@@ -23,10 +19,6 @@ from keras.layers import Dense, Flatten, LSTM, Bidirectional, Conv1D, MaxPooling
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-### II. Import data
-# Path to the environment variables file .env
-env_path = '/data/dssg-disinfo/.env'
-load_dotenv(env_path, override=True)
 
 _model_arch_registry = {}
 

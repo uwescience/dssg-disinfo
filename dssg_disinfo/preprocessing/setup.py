@@ -7,7 +7,7 @@ import spacy
 import os
 
 # Path to the environment variables file .env
-env_path = '/data/dssg-disinfo/.env'
+env_path = '.env'
 load_dotenv(env_path, override=True)
 
 def replace_char(DATA, CHAR, COLUMN=None):
@@ -93,8 +93,8 @@ def clean_data(DATA=None):
     Drops empty article_text rows
     Removes duplicate article_text
     Remove non-english article_text from the dataframe
-    Remove noisy characters from article_text, article_headline
-    Converting all characters in article_text, article_headline to ascii- removes emoticons
+    Remove noisy characters from article_text
+    Converting all characters in article_text to ascii- removes emoticons
     Exports clean data in CLEAN_DATA named dataframe in DATA_PATH location
     
     Parameters
@@ -137,7 +137,6 @@ def clean_data(DATA=None):
     
     for char in nonspace_ws_characters:  
         replace_char(df, char, 'article_text')
-        replace_char(df, char, 'article_headline')
                          
     print("Replacing urls with token EMBD_HTML")                     
     # Encoding URLs
@@ -150,7 +149,6 @@ def clean_data(DATA=None):
     print("Removing non-ASCII characters")
     # Removing non-ASCII characters                     
     remove_non_ascii(df, 'article_text')
-    remove_non_ascii(df, 'article_headline')
     
     print("Exporting clean data")
     # Export clean data

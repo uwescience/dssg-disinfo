@@ -1,16 +1,10 @@
-#--------------------------------
-# Get data and split for train and test
-#--------------------------------
-
-### I. Importing necessary packages
+# Importing necessary packages
 import numpy as np
 import pandas as pd
 import io
 import os
 from dotenv import load_dotenv
 from pathlib import Path  # Python 3.6+ only
-env_path = '/data/dssg-disinfo/.env'
-load_dotenv(env_path, override=True)
 from datetime import datetime
 from tensorflow import keras
 from keras.preprocessing.text import Tokenizer
@@ -19,7 +13,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler #NEW
 import matplotlib.pyplot as plt
 
-from models.model_arch import *
+from .model_arch import *
 
 def get_data_and_split(vocab_size, maxlen, model_arch=None, multiple=False, scaler=False):
     '''
@@ -65,7 +59,7 @@ def get_data_and_split(vocab_size, maxlen, model_arch=None, multiple=False, scal
             sentences, y, test_size=0.25, random_state = 42)
         
         ######## The following code collects the article primary keys of the test data
-        file_name = datetime.now().strftime('%Y%m%d%H%M%S')+'_'+'.article_pk'
+        file_name = datetime.now().strftime('%Y%m%d%H%M%S')+'.article_pk'
         sentences_test['article_pk'].to_csv(file_name, index=False)
         ######## ----------------------------------------------------------------------
         

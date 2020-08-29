@@ -2,8 +2,6 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 from pathlib import Path  # Python 3.6+ only
-env_path = '/data/dssg-disinfo/.env'
-load_dotenv(env_path, override=True)
 
 def format_date(DATA=None, COLUMN=None):
     ''' Reads in the dataframe with a date column

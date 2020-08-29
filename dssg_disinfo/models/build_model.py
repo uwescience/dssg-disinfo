@@ -1,8 +1,3 @@
-#--------------------------------
-#       
-#--------------------------------
-
-### I. Importing necessary packages
 import numpy as np
 import pandas as pd
 import io
@@ -23,23 +18,9 @@ from sklearn.metrics import roc_curve, auc
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-#Import Model Registry
-#import model_registry
-#from model_registry import *
-#import model_arch
-from models.model_arch import *
-#import get_data
-from models.get_data import *
-from models.word_embedding_arch import *
-
-### II. Import data
-# Path to the environment variables file .env
-env_path = '/data/dssg-disinfo/.env'
-load_dotenv(env_path, override=True)
-
-#WHERE BASELINE MODEL WAS
-# ...
-
+from .model_arch import *
+from .get_data import *
+from .word_embedding_arch import *
 
 def build_model(model_arch=None, **copacabana):
     """Builds a model using the passed parameters."""
@@ -57,7 +38,7 @@ def build_model(model_arch=None, **copacabana):
         model=Model(inputs=[nlp_input, meta_input], outputs=[x]) # Final model
         
     elif (model_arch=='word_embedding'):
-        model = build_model_arch(model_arch, copacabana) # added this becaues I wanted to run model from arch
+        model = build_model_arch(model_arch, copacabana)
         #model = create_word_embd_model_arch(model_arch, copacabana)
         
     else:
@@ -70,7 +51,7 @@ def fit_and_run_embedding_model(bidir_num_filters=64, dense_1_filters=10, vocab_
         DATA_PATH = os.getenv("DATA_PATH")
         ALL_FEATURES_DATA = os.getenv("ALL_FEATURES_DATA")
         df = pd.read_csv(os.path.join(DATA_PATH, ALL_FEATURES_DATA))
-        ### III. Splitting the data into training and testing
+        ### Splitting the data into training and testing
         X = df['article_text'] # article_text
         y = df.label
 
@@ -82,7 +63,7 @@ def fit_and_run_embedding_model(bidir_num_filters=64, dense_1_filters=10, vocab_
         trunc_type='post'
         oov_tok = "<OOV>"
 
-        ### IV. Tokenizing, padding, and truncating
+        ###  Tokenizing, padding, and truncating
         tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)
         tokenizer.fit_on_texts(training_sentences)
         word_index = tokenizer.word_index
@@ -107,10 +88,10 @@ def fit_and_run_embedding_model(bidir_num_filters=64, dense_1_filters=10, vocab_
         print("Model summary:")
         model.summary()
 
-        ### VI. Put model together and run
+        ###  Put model together and run
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[tf.keras.metrics.AUC()])
 
-        ### VII. Fitting and running the model
+        ###  Fitting and running the model
         num_epochs = epochs
         file_name = datetime.now().strftime('%Y%m%d%H%M%S')+'_'+model_arch+'_'+str(vocab_size)+'_'+str(embedding_dim)+'_'+str(maxlen)+'_'+str(epochs)+'.log'
         csv_logger = CSVLogger(file_name, append=True, separator=';')
@@ -181,135 +162,3 @@ def create_embedding_matrix(filepath, word_index, embedding_dim):
                     vector, dtype=np.float32)[:embedding_dim]
 
     return embedding_matrix
-
-""" This is commented because get_data_and_split is now being called from get_data.py module. This is double.
-
-def get_data_and_split(vocab_size, maxlen):
-    '''
-    Fetches the data and splits into train/test
-    '''
-                     
-     # Get the paths
-    DATA_PATH = os.getenv("PATH") # we need to change "PATH" to "DATA_PATH" in the ENV File 
-    CLEAN_DATA = os.getenv("CLEAN_DATA")
-    df = pd.read_csv(os.path.join(DATA_PATH, CLEAN_DATA))
-    
-    ### III. Splitting the data into training and testing
-    sentences = df['article_text'].values
-    y = df['label'].values
-
-    # Train-test split
-    sentences_train, sentences_test, y_train, y_test = train_test_split(
-        sentences, y, test_size=0.25, random_state = 42)
-    
-    # making y into np arrays
-    y_train = np.array(y_train)
-    y_test = np.array(y_test)
-
-    # Adding 1 because of reserved 0 index
-    vocab_size = len(tokenizer.word_index) + 1
-    
-    # Tokenize words
-    tokenizer = Tokenizer(num_words = vocab_size, oov_token='<OOV>')
-    tokenizer.fit_on_texts(sentences_train)
-    X_train = tokenizer.texts_to_sequences(sentences_train)
-    X_test = tokenizer.texts_to_sequences(sentences_test)
-
-    # Pad sequences with zeros
-    X_train = pad_sequences(X_train, padding='post', maxlen=maxlen, truncating='post')
-    X_test = pad_sequences(X_test, padding='post', maxlen=maxlen, truncating='post')
-    
-    return X_train, X_test, y_train, y_test
-
-"""
-
-
-
-'''
-                     
-def LSTM_model(VOCAB_SIZE = 10000, EMBEDDING_DIM = 300, MAX_LENGTH = 681, NUM_EPOCHS = 5):
-    """
-    input:
-    -----
-    VOCAB_SIZE: The number of words from corpus
-    EMBEDDING_DIM: The dimension of the embedding
-    MAX_LENGTH: The number of tokens that will be kept from each 
-    NUM_EPOCHS: The number of times the model will be run
-    
-    output:
-    history: The model fit output
-    """
-    # Get the paths
-    DATA_PATH = os.getenv("PATH") # we need to change "PATH" to "DATA_PATH" in the ENV File 
-    CLEAN_DATA = os.getenv("CLEAN_DATA")
-    df = pd.read_csv(os.path.join(DATA_PATH, CLEAN_DATA))
-
-
-    ### III. Splitting the data into training and testing
-    X = df['article_text'] # article_text
-    y = df.label
-    
-    training_sentences, testing_sentences, training_labels, testing_labels = train_test_split(X, y, random_state = 42)
-
-    # making y into np arrays
-    training_labels_final = np.array(training_labels)
-    testing_labels_final = np.array(testing_labels)
-
-    vocab_size = VOCAB_SIZE 
-    embedding_dim = EMBEDDING_DIM
-    max_length = MAX_LENGTH
-    trunc_type='post'
-    oov_tok = "<OOV>"
-
-
-    ### IV. Tokenizing, padding, and truncating
-    tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)
-    tokenizer.fit_on_texts(training_sentences)
-    word_index = tokenizer.word_index
-    sequences = tokenizer.texts_to_sequences(training_sentences)
-    padded = pad_sequences(sequences,maxlen=max_length, truncating=trunc_type)
-
-    testing_sequences = tokenizer.texts_to_sequences(testing_sentences)
-    testing_padded = pad_sequences(testing_sequences,maxlen=max_length)
-
-
-    ### V. Network architecture/building the model
-    model = keras.Sequential([
-        keras.layers.Embedding(vocab_size, embedding_dim, input_length=max_length),
-        keras.layers.Bidirectional(keras.layers.LSTM(64)),
-        keras.layers.Dense(64, activation='relu'),
-        keras.layers.Dense(1, activation='sigmoid')
-    ])
-    # Print model layers
-    print("Model summary:")
-    model.summary()
-
-    ### VI. Put model together and run
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-    ### VII. Fitting and running the model
-    num_epochs = NUM_EPOCHS
-    file_name = 'LSTM_model'+'_'+str(VOCAB_SIZE)+'_'+str(EMBEDDING_DIM)+'_'+str(MAX_LENGTH)+'_'+str(NUM_EPOCHS)+'.log'
-    csv_logger = CSVLogger(file_name, append=True, separator=';')
-    history=model.fit(padded, training_labels_final, epochs=num_epochs, validation_data=(testing_padded, testing_labels_final), callbacks=[csv_logger])
-    
-    #plot_graphs(history, 'accuracy')
-    #plot_graphs(history, 'loss')
-    
-    return history
-
-
-def plot_graphs(history, string):
-    
-    #history=collected model, string= 'accuracy' or whichever. 
-    #It will name the png output file as history+metric
-    
-    plt.plot(history.history[string])
-    plt.plot(history.history['val_'+string])
-    plt.xlabel("Epochs")
-    plt.ylabel(string)
-    plt.legend([string, 'val_'+string])
-    file_name= f'{history}'+ string + '.png'
-    plt.savefig(file_name)
-    return
-'''

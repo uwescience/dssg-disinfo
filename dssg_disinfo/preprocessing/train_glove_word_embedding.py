@@ -6,9 +6,6 @@ from pathlib import Path  # Python 3.6+ only
 from keras.preprocessing.text import Tokenizer
 from sklearn.model_selection import train_test_split
 
-env_path = '/data/dssg-disinfo/.env'
-load_dotenv(env_path, override=True)
-
 def write_tokens(input_file, output_file):
     """ Writes tokens after removing \t\n and lowercasing input_file
     
@@ -35,22 +32,6 @@ def write_tokens(input_file, output_file):
     print("Writing tokens completed. File: "+output_file)
     return
 
-##--------------------------------------------------------------------------
-# To generate glove word embeddings for a text T:
-# 1. write_tokens(input_file=T, output_file)
-# 2. In command line 
-# $ git clone http://github.com/stanfordnlp/glove
-# $ cd glove && make
-# Open demo.sh and make the following changes:
-#        After make remove the lines from if to fi
-#        Instead of CORPUS=text8, write CORPUS='your output file that was saved in write_tokens'
-#        Remove lines from if to fi at the end.
-#        Save the demo.sh 
-# $ ./demo.sh
-# The word vectors will be saved in vectors.txt which will be
-# the input of create_embedding_matrix.
-
-
 def return_word_index():
     """ returns word_index from article text
     """
@@ -76,7 +57,7 @@ def return_word_index():
     oov_tok = "<OOV>"
 
 
-    ### IV. Tokenizing, padding, and truncating
+    ### Tokenizing, padding, and truncating
     tokenizer = Tokenizer(num_words = vocab_size, oov_token=oov_tok)
     tokenizer.fit_on_texts(training_sentences)
     word_index = tokenizer.word_index

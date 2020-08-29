@@ -6,8 +6,6 @@ from joblib import Parallel, delayed
 
 nlp = spacy.load('en_core_web_sm')
 
-
-
 #Tagging parts of speech
 def pos_pipe(doc):
     ''' Tags each word in a given text with part-of-speech(POS) tag and
