@@ -1,0 +1,9 @@
+.DS_Store
+data/
+*.csv
+.ipynb_checkpoints
+*.pyc
+*.ipynb
+!/notebooks/*.ipynb
+models/pretrained_embeddings/
+__pycache__
