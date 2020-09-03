@@ -53,13 +53,11 @@ The following outputs are produced by the code:
 
 ## Model Evaluation
 _NOTE_ This step can be done if there is a trained model present in the ```/output``` folder.
+
 _NOTE_ The csv file must have three columns ```article_pk```, ```article_text```, and ```label```.
 ```label``` is a binary column with value 1 if the ```article_text``` is disinformation and 0 if the ```article_text``` is legitimate.
 ```article_pk``` is a unique identifier for the ```article_text```.
 ```article_text``` is a string column which contains the articles scraped from the websites. Each column is an article either disinformation or legitimate.
 
 If you want to evaluate the saved model for your own data you need to perform the following steps:
-1. Open ```evaluate_your_own_data.py``` and give the path to your own csv file in line 5.
-```my_data = pd.read_csv('PATH/TO/YOUR/DATA')```
-2. Save ```evaluate_your_own_data.py```.
-3. Run ```$ ./evaluate_your_own_data.sh```
+Run ```$ ./evaluate_your_own_data.sh 'PATH/TO/YOUR/DATA.csv'```
