@@ -46,7 +46,20 @@ The following outputs are produced by the code:
 
 3. _article_pk file_ - A csv file that stores the article primary keys of the articles that were used in the validation data set. This file can be used in combination with _predict file_ to identify which articles were incorrectly labelled for a further analysis. The article pk file is saved in the ```/output``` folder.
 
-4. _Plots_- Two .png plots are saved in the ```/output/visualization``` folder. One plot is showing loss for validation and testing data across the epochs and the other plot shows the auc accuracies for validation and testing data.
+4. _Plots_- Two .png plots are saved in the ```/output``` folder. One plot is showing loss for validation and testing data across the epochs and the other plot shows the auc accuracies for validation and testing data.
+
+5. _Trained model_ - A .h5 file that stores the trained model. This model can be used to evaluate the performance of the model on new data. The model is saved in the ```/output``` folder.
 
 
+## Model Evaluation
+_NOTE_ This step can be done if there is a trained model present in the ```/output``` folder.
+_NOTE_ The csv file must have three columns ```article_pk```, ```article_text```, and ```label```.
+```label``` is a binary column with value 1 if the ```article_text``` is disinformation and 0 if the ```article_text``` is legitimate.
+```article_pk``` is a unique identifier for the ```article_text```.
+```article_text``` is a string column which contains the articles scraped from the websites. Each column is an article either disinformation or legitimate.
 
+If you want to evaluate the saved model for your own data you need to perform the following steps:
+1. Open ```evaluate_your_own_data.py``` and give the path to your own csv file in line 5.
+```my_data = pd.read_csv('PATH/TO/YOUR/DATA')```
+2. Save ```evaluate_your_own_data.py```.
+3. Run ```$ ./evaluate_your_own_data.sh```

@@ -14,6 +14,8 @@ from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import (RandomizedSearchCV,
                                      StratifiedKFold, 
                                      train_test_split)
+import joblib
+import pickle
 from tensorflow.keras import layers
 from keras.models import Sequential
 from keras.layers import (Dense,
@@ -23,8 +25,6 @@ from keras.layers import (Dense,
 import matplotlib.pyplot as plt
 from .word_embedding_arch import *
 from .get_data import *
-from . import params_class
-params=params_class.params()
 from .baseline_model import create_basic_model_arch
 
 def param_tune(model_arch, **copacabana):
@@ -48,7 +48,7 @@ def param_tune(model_arch, **copacabana):
                       vocab_size=[10000],
                       embedding_dim=[100, 200, 300],
                       maxlen=[681],
-                      dropout_rate=[0.2, 0.3, 0.4, 0.5],
+                      dropout_rate=[0.2, 0.3, 0.4],
                       optimizer=['adam', 'nadam'])
     
     # File to save the model logs
@@ -69,9 +69,9 @@ def param_tune(model_arch, **copacabana):
         X_train, X_test, y_train, y_test = get_data_and_split(copacabana['vocab_size'],
                                                               copacabana['maxlen']) # get_data.py function
 
+        
         grid.fit(X_train, y_train,
-                 epochs=copacabana['epochs'],
-                 validation_data=(X_test, y_test))
+                epochs=copacabana['epochs'])
         
         print("Best model parameters are:")
         print(grid.best_params_)
@@ -83,6 +83,9 @@ def param_tune(model_arch, **copacabana):
                                  epochs=copacabana['epochs'],
                                  validation_data=(X_test, y_test),
                                  callbacks=[csv_logger])
+        
+        print("Saving the model")
+        grid.best_estimator_.model.save('best_model.h5')
         
         print(f"Fitting completed. Refer {file_name}.")
         
@@ -131,6 +134,9 @@ def param_tune(model_arch, **copacabana):
                                  epochs=copacabana['epochs'],
                                  validation_data=(X_test, y_test),
                                  callbacks=[csv_logger])
+        
+        print("Saving the model")
+        grid.best_estimator_.model.save('best_model.h5')
         
         print(f"Fitting completed. Refer {file_name}.")
         

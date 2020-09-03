@@ -29,13 +29,7 @@ def plot_graphs(log_file, model_arch):
             
     
     '''    
-    script_dir = os.path.dirname(__file__)
 
-    results_dir = os.path.join(script_dir, '/visualization/')
-    
-    if not os.path.isdir(results_dir):
-        os.makedirs(results_dir)
-    
     data = pd.read_csv(log_file, sep=';')
     
     # plotting loss 
@@ -47,8 +41,7 @@ def plot_graphs(log_file, model_arch):
     plt.xlabel("Epochs")
     plt.ylabel("Loss") 
     file_name_loss= model_arch + '_'+ 'loss_'+datetime.now().strftime('%Y%m%d%H%M%S')+'.png'
-    plt.savefig(results_dir + file_name_loss)
-   
+    plt.savefig(file_name_loss)
 
     # plotting accuracy 
     ax = plt.figure(figsize=(15,8)).gca()
@@ -59,6 +52,6 @@ def plot_graphs(log_file, model_arch):
     plt.xlabel("Epochs")
     plt.ylabel("AUC")   
     file_name_acc= model_arch + '_'+ 'auc_'+datetime.now().strftime('%Y%m%d%H%M%S')+'.png'
-    plt.savefig(results_dir + file_name_acc)
+    plt.savefig(file_name_acc)
        
     return
