@@ -3,7 +3,7 @@ from dssg_disinfo.models.prepare_your_data import prepare_your_data
 import tensorflow as tf
 import sys
 
-#'../../../../../data/dssg-disinfo/articles_v3_50.csv' ## This was used for testing
+#'../../../data/dssg-disinfo/articles_v3_50.csv' ## This was used for testing
 
 '''
 This python file reads data passed by the user while calling evaluate_your_own_data.sh file
@@ -22,5 +22,5 @@ load_model = tf.keras.models.load_model('output/best_model.h5') # calls the trai
 
 # Evaluate the trained model
 loss, acc = load_model.evaluate(processed_data,  my_data['label'], verbose=2)
-print('Loaded model, loss: {:5.2f}%'.format(100*loss))
+print('Loaded model, loss: {:5.2f}'.format(loss))
 print('Loaded model, accuracy: {:5.2f}%'.format(100*acc))
